@@ -108,7 +108,7 @@ export default function HomeScreen() {
         </Pressable>
       </Panel>
 
-      <LinearGradient colors={['#328B48', '#24713A']} style={styles.festivalStatus}>
+      <LinearGradient colors={['#16825F', '#0C6047']} style={styles.festivalStatus}>
         <View style={styles.stageIcon}>
           <Ionicons name="grid-outline" size={23} color={colors.surface} />
         </View>
@@ -172,7 +172,7 @@ export default function HomeScreen() {
 
       <QuestList quests={quests} onToggle={toggleQuest} />
 
-      <LinearGradient colors={['#173D2A', '#28613C', '#183524']} style={styles.highlightCard}>
+      <LinearGradient colors={['#073C2D', '#0D6046', '#092F25']} style={styles.highlightCard}>
         <View style={styles.highlightDecorationOne} />
         <View style={styles.highlightDecorationTwo} />
         <View style={styles.highlightContent}>
@@ -272,9 +272,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.14)',
   },
   statusCopy: { flex: 1 },
-  statusEyebrow: { color: '#C8F1D0', fontSize: 9, fontWeight: '700' },
+  statusEyebrow: { color: '#C9F3E1', fontSize: 9, fontWeight: '700' },
   statusTitle: { marginTop: 3, color: colors.surface, fontSize: 17, fontWeight: '700' },
-  statusSubtitle: { marginTop: 3, color: '#D5EADA', fontSize: 10 },
+  statusSubtitle: { marginTop: 3, color: '#D7EFE5', fontSize: 10 },
   impactHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   impactCopy: { flex: 1 },
   cardEyebrow: { color: colors.primary, fontSize: 9, fontWeight: '800' },
@@ -290,13 +290,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.amberSoft,
   },
   rewardCopy: { flex: 1 },
-  rewardTitle: { color: '#4A3511', fontSize: 11, fontWeight: '800' },
-  rewardSubtitle: { marginTop: 2, color: '#7A633B', fontSize: 9 },
+  rewardTitle: { color: '#493607', fontSize: 11, fontWeight: '800' },
+  rewardSubtitle: { marginTop: 2, color: '#725E2D', fontSize: 9 },
   claimButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: radius.round,
-    backgroundColor: '#7B5818',
+    backgroundColor: '#7A5708',
   },
   claimText: { color: colors.surface, fontSize: 10, fontWeight: '800' },
   claimButtonDisabled: { backgroundColor: colors.textMuted },
@@ -332,9 +332,9 @@ const styles = StyleSheet.create({
     borderRadius: 55,
   },
   highlightContent: { flex: 1 },
-  highlightEyebrow: { color: '#A9DCAE', fontSize: 9, fontWeight: '800' },
+  highlightEyebrow: { color: '#A8DFC8', fontSize: 9, fontWeight: '800' },
   highlightTitle: { marginTop: 5, color: colors.surface, fontSize: 17, fontWeight: '700' },
-  highlightSubtitle: { marginTop: 3, color: '#D7E5DA', fontSize: 10 },
+  highlightSubtitle: { marginTop: 3, color: '#D4EADF', fontSize: 10 },
   remindButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.round,
     backgroundColor: colors.primary,
   },
-  remindButtonActive: { backgroundColor: '#175527' },
+  remindButtonActive: { backgroundColor: colors.primaryDark },
   remindText: { color: colors.surface, fontSize: 10, fontWeight: '800' },
   pressed: { opacity: 0.72 },
 });

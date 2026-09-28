@@ -9,7 +9,7 @@ export default function BottomTabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: '#556057',
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarHideOnKeyboard: true,
         tabBarLabelStyle: {
           marginTop: 2,

@@ -194,7 +194,7 @@ export default function TravelScreen() {
       </Panel>
 
       <Panel style={styles.journeyCard}>
-        <LinearGradient colors={['#23773A', '#86D46E', '#F1AF36']} style={styles.journeyAccent} />
+        <LinearGradient colors={['#0C6B4E', '#55B88E', '#E9A928']} style={styles.journeyAccent} />
         <View style={styles.journeyInner}>
           <View style={styles.journeyTopRow}>
             <View style={styles.journeyTags}>
@@ -255,12 +255,12 @@ export default function TravelScreen() {
       </Panel>
 
       <View style={styles.transportVisuals}>
-        <LinearGradient colors={['#D6EADB', '#86B890']} style={styles.transportVisual}>
-          <Ionicons name="train-outline" size={50} color="#245D35" />
+        <LinearGradient colors={['#D9EFE6', '#79C1A1']} style={styles.transportVisual}>
+          <Ionicons name="train-outline" size={50} color={colors.primaryDark} />
           <Text style={styles.visualTitle}>100% Electric Rail</Text>
         </LinearGradient>
-        <LinearGradient colors={['#DCE6FF', '#9FB8E4']} style={styles.transportVisual}>
-          <Ionicons name="bus-outline" size={50} color="#31537B" />
+        <LinearGradient colors={['#E1F0EE', '#8DBDB7']} style={styles.transportVisual}>
+          <Ionicons name="bus-outline" size={50} color="#245D5A" />
           <Text style={styles.visualTitle}>Direct Solar Shuttles</Text>
         </LinearGradient>
       </View>
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   routeCopy: { flex: 1 },
   routeLabel: { color: colors.textMuted, fontSize: 9, fontWeight: '800' },
   routeValue: { marginTop: 3, color: colors.text, fontSize: 16, fontWeight: '700' },
-  routeLine: { width: 2, height: 10, marginLeft: 17, backgroundColor: '#CADACA' },
+  routeLine: { width: 2, height: 10, marginLeft: 17, backgroundColor: colors.border },
   swapButton: {
     width: 42,
     height: 42,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lavender,
   },
   rewardText: { flex: 1, color: colors.text, fontSize: 11, fontWeight: '700' },
-  syncedText: { color: '#8A6417', fontSize: 8, fontWeight: '800' },
+  syncedText: { color: '#74530A', fontSize: 8, fontWeight: '800' },
   transportVisuals: { flexDirection: 'row', gap: spacing.sm },
   transportVisual: {
     minHeight: 110,
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginTop: spacing.md,
     borderRadius: radius.md,
-    backgroundColor: '#DDE7E4',
+    backgroundColor: '#DCEAE5',
   },
   mapLine: { position: 'absolute', height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.9)' },
   mapLineOne: { width: 250, left: -20, top: 65, transform: [{ rotate: '-12deg' }] },

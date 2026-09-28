@@ -110,7 +110,7 @@ export default function EcoMapScreen() {
           <TextInput
             accessibilityLabel="Search eco map"
             placeholder="Find water, recycling, solar hubs..."
-            placeholderTextColor="#818A82"
+            placeholderTextColor={colors.textMuted}
             value={query}
             onChangeText={updateQuery}
             returnKeyType="search"
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     padding: spacing.md,
     borderRadius: radius.md,
-    backgroundColor: '#E4F2E6',
+    backgroundColor: colors.primarySoft,
   },
   impactIcon: {
     width: 32,

@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: '#D8DDF8',
+    backgroundColor: colors.border,
   },
   checkboxDone: { backgroundColor: colors.primary },
   label: { flex: 1, color: colors.text, fontSize: 12 },

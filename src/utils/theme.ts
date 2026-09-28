@@ -1,21 +1,21 @@
 import { Platform, ViewStyle } from 'react-native';
 
 export const colors = {
-  background: '#F7F6FD',
+  background: '#F3F7F4',
   surface: '#FFFFFF',
-  surfaceMuted: '#F0F1FF',
-  primary: '#27763A',
-  primaryDark: '#19572A',
-  primarySoft: '#DFF1E3',
-  mint: '#CFF1D5',
-  text: '#182019',
-  textMuted: '#667067',
-  border: '#E8E8F0',
-  lavender: '#E9EBFF',
-  amber: '#E8A82D',
-  amberSoft: '#FFF0DA',
-  danger: '#C43D35',
-  map: '#D8F4DA',
+  surfaceMuted: '#EAF2ED',
+  primary: '#0C6B4E',
+  primaryDark: '#074936',
+  primarySoft: '#D9EFE6',
+  mint: '#BCE5D2',
+  text: '#10251C',
+  textMuted: '#5D7067',
+  border: '#D7E4DC',
+  lavender: '#E4F0EC',
+  amber: '#E9A928',
+  amberSoft: '#FFF3D6',
+  danger: '#C4473D',
+  map: '#D7EEDF',
 } as const;
 
 export const spacing = {
@@ -37,11 +37,11 @@ export const radius = {
 
 export const cardShadow: ViewStyle = Platform.select({
   ios: {
-    shadowColor: '#172019',
+    shadowColor: '#0B3022',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
   },
   android: { elevation: 2 },
-  default: { boxShadow: '0 4px 14px rgba(23, 32, 25, 0.08)' },
+  default: { boxShadow: '0 4px 14px rgba(11, 48, 34, 0.08)' },
 }) as ViewStyle;

@@ -148,8 +148,8 @@ export function MetricTile({ label, value, icon, accent = false, trailing }: Met
 
 const pillTextColors = {
   green: colors.primaryDark,
-  lavender: '#3E4651',
-  amber: '#76520E',
+  lavender: colors.primaryDark,
+  amber: '#74530A',
   white: colors.primaryDark,
 } as const;
 
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     backgroundColor: colors.primary,
   },
-  actionChipText: { color: '#465047', fontSize: 11, fontWeight: '700' },
+  actionChipText: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   actionChipTextSelected: { color: colors.surface },
   metricTile: {
     minHeight: 66,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     backgroundColor: colors.surfaceMuted,
   },
-  metricTileAccent: { backgroundColor: '#ECF8EE' },
+  metricTileAccent: { backgroundColor: colors.primarySoft },
   metricIcon: {
     width: 30,
     height: 30,
