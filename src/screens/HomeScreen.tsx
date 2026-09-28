@@ -2,19 +2,26 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { FeedbackSheet } from '@/components/FeedbackSheet';
 import { ProgressRing } from '@/components/ProgressRing';
 import { QuestList } from '@/components/QuestList';
 import { ScreenScaffold } from '@/components/ScreenScaffold';
 import { ToolCard } from '@/components/ToolCard';
 import { MetricTile, Panel, Pill, SectionTitle } from '@/components/ui';
 import { festivalTools, initialQuests } from '@/data/mockData';
-import { EcoQuest, FestivalTool } from '@/types/models';
+import { EcoQuest, FestivalTool, IconName } from '@/types/models';
 import { colors, radius, spacing } from '@/utils/theme';
 
 export default function HomeScreen() {
   const [quests, setQuests] = useState<EcoQuest[]>(initialQuests);
+  const [rewardClaimed, setRewardClaimed] = useState(false);
+  const [reminderSet, setReminderSet] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const greenPoints = 90 + quests
+    .filter((quest) => quest.completed)
+    .reduce((total, quest) => total + quest.points, 0);
 
   function handleToolPress(tool: FestivalTool) {
     if (tool.route) {
@@ -22,7 +29,33 @@ export default function HomeScreen() {
       return;
     }
 
-    Alert.alert('Demo action', 'Cup scanning will be connected in a later step.');
+    setFeedback({
+      title: 'Scanner ready',
+      message: 'The demo scanner is ready. Camera-based QR scanning will be connected in the GPS/API phase.',
+      icon: 'qr-code-outline',
+    });
+  }
+
+  function claimReward() {
+    if (rewardClaimed) return;
+    setRewardClaimed(true);
+    setFeedback({
+      title: 'Reward claimed',
+      message: 'Your free zero-waste pint voucher is now stored in your Green Wallet.',
+      icon: 'gift-outline',
+    });
+  }
+
+  function toggleReminder() {
+    const nextValue = !reminderSet;
+    setReminderSet(nextValue);
+    setFeedback({
+      title: nextValue ? 'Reminder added' : 'Reminder removed',
+      message: nextValue
+        ? 'The Green Sparks Live is saved for 21:30 in this demo.'
+        : 'The festival reminder has been removed.',
+      icon: nextValue ? 'notifications-outline' : 'notifications-off-outline',
+    });
   }
 
   function toggleQuest(id: string) {
@@ -34,7 +67,19 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScreenScaffold title="Home Dashboard">
+    <ScreenScaffold
+      title="Home Dashboard"
+      onNotifications={() => setFeedback({
+        title: 'Festival updates',
+        message: 'Water stations are quiet and the Pyramid Stage is running on 100% stored solar power.',
+        icon: 'notifications-outline',
+      })}
+      onProfile={() => setFeedback({
+        title: 'Alex · Forest Guardian',
+        message: `${greenPoints} green points collected. You are currently in the top 5% of festival visitors.`,
+        icon: 'person-outline',
+      })}
+    >
       <Panel style={styles.welcomeCard}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>A</Text>
@@ -47,9 +92,20 @@ export default function HomeScreen() {
             <Text style={styles.locationText}>Glastonbury 2025 · Day 2</Text>
           </View>
         </View>
-        <View style={styles.walletButton}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open Green Wallet"
+          onPress={() => setFeedback({
+            title: 'Green Wallet',
+            message: rewardClaimed
+              ? 'Your zero-waste pint voucher is ready to use.'
+              : 'Complete 30 more points or claim your available voucher below.',
+            icon: 'wallet-outline',
+          })}
+          style={({ pressed }) => [styles.walletButton, pressed && styles.pressed]}
+        >
           <Ionicons name="wallet-outline" size={17} color={colors.textMuted} />
-        </View>
+        </Pressable>
       </Panel>
 
       <LinearGradient colors={['#328B48', '#24713A']} style={styles.festivalStatus}>
@@ -71,21 +127,31 @@ export default function HomeScreen() {
             <Text style={styles.impactTitle}>Forest Guardian</Text>
             <Text style={styles.impactSubtitle}>Top 5% eco-conscious festival visitor</Text>
           </View>
-          <ProgressRing value={120} target={150} />
+          <ProgressRing value={greenPoints} target={150} />
         </View>
 
         <View style={styles.rewardCard}>
           <Ionicons name="gift-outline" size={21} color="#8A6112" />
           <View style={styles.rewardCopy}>
-            <Text style={styles.rewardTitle}>Voucher ready: Free Zero-Waste Pint</Text>
-            <Text style={styles.rewardSubtitle}>Claimable at Cider Barn & Green Fields</Text>
+            <Text style={styles.rewardTitle}>
+              {rewardClaimed ? 'Voucher claimed: Free Zero-Waste Pint' : 'Voucher ready: Free Zero-Waste Pint'}
+            </Text>
+            <Text style={styles.rewardSubtitle}>
+              {rewardClaimed ? 'Saved in your Green Wallet' : 'Claimable at Cider Barn & Green Fields'}
+            </Text>
           </View>
           <Pressable
             accessibilityRole="button"
-            onPress={() => Alert.alert('Reward ready', 'This reward is a demo and is ready to claim.')}
-            style={({ pressed }) => [styles.claimButton, pressed && styles.pressed]}
+            disabled={rewardClaimed}
+            accessibilityState={{ disabled: rewardClaimed }}
+            onPress={claimReward}
+            style={({ pressed }) => [
+              styles.claimButton,
+              rewardClaimed && styles.claimButtonDisabled,
+              pressed && styles.pressed,
+            ]}
           >
-            <Text style={styles.claimText}>Claim</Text>
+            <Text style={styles.claimText}>{rewardClaimed ? 'Claimed' : 'Claim'}</Text>
           </Pressable>
         </View>
 
@@ -116,16 +182,40 @@ export default function HomeScreen() {
         </View>
         <Pressable
           accessibilityRole="button"
-          onPress={() => Alert.alert('Reminder set', 'We will remind you before the Green Sparks show.')}
-          style={({ pressed }) => [styles.remindButton, pressed && styles.pressed]}
+          onPress={toggleReminder}
+          style={({ pressed }) => [
+            styles.remindButton,
+            reminderSet && styles.remindButtonActive,
+            pressed && styles.pressed,
+          ]}
         >
-          <Ionicons name="notifications-outline" size={14} color={colors.surface} />
-          <Text style={styles.remindText}>Remind</Text>
+          <Ionicons
+            name={reminderSet ? 'checkmark-circle' : 'notifications-outline'}
+            size={14}
+            color={colors.surface}
+          />
+          <Text style={styles.remindText}>{reminderSet ? 'Added' : 'Remind'}</Text>
         </Pressable>
       </LinearGradient>
+
+      <FeedbackSheet
+        visible={feedback !== null}
+        title={feedback?.title ?? ''}
+        message={feedback?.message ?? ''}
+        icon={feedback?.icon}
+        primaryLabel={feedback?.primaryLabel}
+        onClose={() => setFeedback(null)}
+      />
     </ScreenScaffold>
   );
 }
+
+type Feedback = {
+  title: string;
+  message: string;
+  icon: IconName;
+  primaryLabel?: string;
+};
 
 const styles = StyleSheet.create({
   welcomeCard: {
@@ -209,6 +299,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#7B5818',
   },
   claimText: { color: colors.surface, fontSize: 10, fontWeight: '800' },
+  claimButtonDisabled: { backgroundColor: colors.textMuted },
   metricRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
   toolsSection: { gap: spacing.md },
   toolGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: spacing.md },
@@ -253,6 +344,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.round,
     backgroundColor: colors.primary,
   },
+  remindButtonActive: { backgroundColor: '#175527' },
   remindText: { color: colors.surface, fontSize: 10, fontWeight: '800' },
   pressed: { opacity: 0.72 },
 });

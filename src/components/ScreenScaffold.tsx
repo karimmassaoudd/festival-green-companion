@@ -9,13 +9,21 @@ import { colors, spacing } from '@/utils/theme';
 type ScreenScaffoldProps = PropsWithChildren<{
   title: string;
   statusRight?: string;
+  onNotifications: () => void;
+  onProfile: () => void;
 }>;
 
-export function ScreenScaffold({ title, statusRight = 'Live Festival Mode', children }: ScreenScaffoldProps) {
+export function ScreenScaffold({
+  title,
+  statusRight = 'Live Festival Mode',
+  onNotifications,
+  onProfile,
+  children,
+}: ScreenScaffoldProps) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.page}>
-        <AppHeader title={title} />
+        <AppHeader title={title} onNotifications={onNotifications} onProfile={onProfile} />
         <View style={styles.productionRow}>
           <Pill label="ITERATION 3 · FINAL PRODUCTION" icon="ellipse" compact />
           <Text style={styles.statusText}>{statusRight}</Text>

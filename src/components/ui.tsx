@@ -60,6 +60,7 @@ type PrimaryButtonProps = {
   label: string;
   icon?: IconName;
   variant?: 'primary' | 'soft';
+  disabled?: boolean;
   onPress: () => void;
 };
 
@@ -67,6 +68,7 @@ export function PrimaryButton({
   label,
   icon = 'arrow-forward',
   variant = 'primary',
+  disabled = false,
   onPress,
 }: PrimaryButtonProps) {
   const isPrimary = variant === 'primary';
@@ -74,10 +76,13 @@ export function PrimaryButton({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.primaryButton,
         isPrimary ? styles.primaryButtonGreen : styles.primaryButtonSoft,
+        disabled && styles.disabled,
         pressed && styles.pressed,
       ]}
     >
@@ -85,6 +90,33 @@ export function PrimaryButton({
       <Text style={[styles.primaryButtonText, !isPrimary && styles.primaryButtonTextSoft]}>
         {label}
       </Text>
+    </Pressable>
+  );
+}
+
+type ActionChipProps = {
+  label: string;
+  icon?: IconName;
+  selected?: boolean;
+  onPress: () => void;
+};
+
+export function ActionChip({ label, icon, selected = false, onPress }: ActionChipProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.actionChip,
+        selected && styles.actionChipSelected,
+        pressed && styles.pressed,
+      ]}
+    >
+      {icon ? (
+        <Ionicons name={icon} size={14} color={selected ? colors.surface : colors.primary} />
+      ) : null}
+      <Text style={[styles.actionChipText, selected && styles.actionChipTextSelected]}>{label}</Text>
     </Pressable>
   );
 }
@@ -188,6 +220,25 @@ const styles = StyleSheet.create({
   },
   primaryButtonTextSoft: { color: colors.primaryDark },
   pressed: { opacity: 0.78, transform: [{ scale: 0.99 }] },
+  disabled: { opacity: 0.48 },
+  actionChip: {
+    minHeight: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.round,
+    backgroundColor: colors.surfaceMuted,
+  },
+  actionChipSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
+  },
+  actionChipText: { color: '#465047', fontSize: 11, fontWeight: '700' },
+  actionChipTextSelected: { color: colors.surface },
   metricTile: {
     minHeight: 66,
     flex: 1,

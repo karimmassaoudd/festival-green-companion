@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { TravelOption } from '@/types/models';
 import { formatCo2, formatPrice } from '@/utils/format';
@@ -9,9 +9,11 @@ import { Pill } from '@/components/ui';
 type TravelOptionRowProps = {
   option: TravelOption;
   maxCo2: number;
+  selected: boolean;
+  onPress: () => void;
 };
 
-export function TravelOptionRow({ option, maxCo2 }: TravelOptionRowProps) {
+export function TravelOptionRow({ option, maxCo2, selected, onPress }: TravelOptionRowProps) {
   const percentage = Math.max((option.co2Kg / maxCo2) * 100, 10);
   const barColor = option.recommended
     ? colors.primary
@@ -20,7 +22,17 @@ export function TravelOptionRow({ option, maxCo2 }: TravelOptionRowProps) {
       : colors.amber;
 
   return (
-    <View style={styles.container}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityLabel={`Select ${option.name}`}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.container,
+        selected && styles.selectedContainer,
+        pressed && styles.pressed,
+      ]}
+    >
       <View style={styles.topRow}>
         <View style={styles.nameRow}>
           <Ionicons name={option.icon} size={16} color={barColor} />
@@ -53,12 +65,20 @@ export function TravelOptionRow({ option, maxCo2 }: TravelOptionRowProps) {
           {option.savingPercent > 0 ? `−${option.savingPercent}% CO₂` : 'BASELINE'}
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 6 },
+  container: {
+    gap: 6,
+    marginHorizontal: -8,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    borderRadius: radius.md,
+  },
+  selectedContainer: { borderColor: '#B8DCC0', backgroundColor: '#F1F9F2' },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -92,4 +112,5 @@ const styles = StyleSheet.create({
   },
   saving: { color: colors.primary, fontSize: 9, fontWeight: '800' },
   baseline: { color: colors.danger },
+  pressed: { opacity: 0.74 },
 });

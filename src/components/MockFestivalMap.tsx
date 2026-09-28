@@ -9,6 +9,7 @@ type MockFestivalMapProps = {
   locations: EcoLocation[];
   selectedId: string;
   activeFilter: EcoLocationType | 'all';
+  navigationActive?: boolean;
   onSelect: (location: EcoLocation) => void;
 };
 
@@ -23,6 +24,7 @@ export function MockFestivalMap({
   locations,
   selectedId,
   activeFilter,
+  navigationActive = false,
   onSelect,
 }: MockFestivalMapProps) {
   return (
@@ -37,7 +39,9 @@ export function MockFestivalMap({
         <Polygon points="38,168 77,139 109,170 67,203" fill="#BFE9C4" opacity="0.82" />
         <Polygon points="285,225 332,234 326,269 276,259" fill="#F6FFF7" opacity="0.94" />
         <Circle cx="170" cy="188" r="13" fill="#FFFFFF" opacity="0.65" />
-        <Path d="M170 188 C202 147 228 110 278 76" stroke="#379150" strokeWidth="3" strokeDasharray="5 5" fill="none" />
+        {navigationActive ? (
+          <Path d="M170 188 C202 147 228 110 278 76" stroke="#379150" strokeWidth="4" strokeDasharray="6 5" fill="none" />
+        ) : null}
       </Svg>
 
       <View style={[styles.placeLabel, styles.solarLabel]}>

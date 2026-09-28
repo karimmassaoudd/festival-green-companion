@@ -1,20 +1,110 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { FeedbackSheet } from '@/components/FeedbackSheet';
 import { ScreenScaffold } from '@/components/ScreenScaffold';
 import { TravelOptionRow } from '@/components/TravelOptionRow';
-import { Panel, Pill, PrimaryButton, SectionTitle } from '@/components/ui';
+import { ActionChip, Panel, Pill, PrimaryButton, SectionTitle } from '@/components/ui';
 import { travelOptions } from '@/data/mockData';
+import { IconName } from '@/types/models';
 import { formatPrice } from '@/utils/format';
 import { colors, radius, spacing } from '@/utils/theme';
 
 const recommendedJourney = travelOptions.find((option) => option.recommended) ?? travelOptions[0];
 const maxCo2 = Math.max(...travelOptions.map((option) => option.co2Kg));
+const travelDates = ['Fri 18 Aug', 'Sat 19 Aug', 'Sun 20 Aug'];
+const journeyDetails: Record<string, {
+  departureTime: string;
+  arrivalTime: string;
+  firstStop: string;
+  firstDetail: string;
+  secondStop: string;
+  secondDetail: string;
+}> = {
+  train: {
+    departureTime: '09:15',
+    arrivalTime: '10:45',
+    firstStop: 'Victoria Stn',
+    firstDetail: 'Train · 58m',
+    secondStop: 'E-Shuttle',
+    secondDetail: 'Gate 4 · 32m',
+  },
+  bus: {
+    departureTime: '08:30',
+    arrivalTime: '10:40',
+    firstStop: 'Coach Station',
+    firstDetail: 'Direct coach · 2h',
+    secondStop: 'West Hub',
+    secondDetail: 'Walk · 10m',
+  },
+  carpool: {
+    departureTime: '09:00',
+    arrivalTime: '11:00',
+    firstStop: 'Pickup Zone',
+    firstDetail: 'Shared car · 1h 45m',
+    secondStop: 'West Gate',
+    secondDetail: 'Walk · 15m',
+  },
+  car: {
+    departureTime: '09:15',
+    arrivalTime: '11:00',
+    firstStop: 'London',
+    firstDetail: 'Solo drive · 1h 33m',
+    secondStop: 'Car Park',
+    secondDetail: 'Walk · 12m',
+  },
+};
 
 export default function TravelScreen() {
+  const [departure, setDeparture] = useState('London Victoria (Stn)');
+  const [destination, setDestination] = useState('Festival West Hub');
+  const [dateIndex, setDateIndex] = useState(0);
+  const [directOnly, setDirectOnly] = useState(true);
+  const [groupPass, setGroupPass] = useState(false);
+  const [selectedOptionId, setSelectedOptionId] = useState(recommendedJourney.id);
+  const [bookedOptionId, setBookedOptionId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const selectedOption = travelOptions.find((option) => option.id === selectedOptionId) ?? recommendedJourney;
+  const selectedDetails = journeyDetails[selectedOption.id] ?? journeyDetails.train;
+  const pointsEarned = selectedOption.recommended ? 100 : selectedOption.id === 'car' ? 10 : 60;
+  const carbonSaved = Math.max(maxCo2 - selectedOption.co2Kg, 0);
+
+  function swapRoute() {
+    setDeparture(destination);
+    setDestination(departure);
+    setFeedback({
+      title: 'Route swapped',
+      message: `${destination} is now your departure point. Example prices and emissions remain unchanged.`,
+      icon: 'swap-vertical',
+    });
+  }
+
+  function bookJourney() {
+    setBookedOptionId(selectedOption.id);
+    setFeedback({
+      title: 'Journey saved',
+      message: `${selectedOption.name} is saved for ${travelDates[dateIndex]}. This is a demo booking and no payment was made.`,
+      icon: 'ticket-outline',
+    });
+  }
+
   return (
-    <ScreenScaffold title="Travel & Carbon" statusRight="Carbon-verified routes">
+    <ScreenScaffold
+      title="Travel & Carbon"
+      statusRight="Carbon-verified routes"
+      onNotifications={() => setFeedback({
+        title: 'Travel update',
+        message: 'The 09:15 Green Express is running on time. Shuttle queue: approximately 4 minutes.',
+        icon: 'notifications-outline',
+      })}
+      onProfile={() => setFeedback({
+        title: 'Your travel impact',
+        message: 'Choosing the recommended rail route saves 22.1 kg CO₂ compared with a solo car journey.',
+        icon: 'leaf-outline',
+      })}
+    >
       <View style={styles.intro}>
         <Text style={styles.pageTitle}>Plan Low-Impact Transit</Text>
         <Text style={styles.pageSubtitle}>
@@ -29,7 +119,7 @@ export default function TravelScreen() {
           </View>
           <View style={styles.routeCopy}>
             <Text style={styles.routeLabel}>DEPARTURE</Text>
-            <Text style={styles.routeValue}>London Victoria (Stn)</Text>
+            <Text style={styles.routeValue}>{departure}</Text>
           </View>
         </View>
         <View style={styles.routeLine} />
@@ -39,20 +129,35 @@ export default function TravelScreen() {
           </View>
           <View style={styles.routeCopy}>
             <Text style={styles.routeLabel}>DESTINATION</Text>
-            <Text style={styles.routeValue}>Festival West Hub</Text>
+            <Text style={styles.routeValue}>{destination}</Text>
           </View>
           <Pressable
             accessibilityLabel="Swap departure and destination"
-            onPress={() => Alert.alert('Demo route', 'Route swapping will be connected to live travel data later.')}
+            onPress={swapRoute}
             style={({ pressed }) => [styles.swapButton, pressed && styles.pressed]}
           >
             <Ionicons name="swap-vertical" size={20} color={colors.surface} />
           </Pressable>
         </View>
         <View style={styles.tripTags}>
-          <Pill label="Fri 18 Aug" icon="calendar-outline" />
-          <Pill label="Direct only" icon="flash-outline" tone="lavender" />
-          <Pill label="Group pass" icon="people-outline" tone="lavender" />
+          <ActionChip
+            label={travelDates[dateIndex]}
+            icon="calendar-outline"
+            selected
+            onPress={() => setDateIndex((current) => (current + 1) % travelDates.length)}
+          />
+          <ActionChip
+            label="Direct only"
+            icon="flash-outline"
+            selected={directOnly}
+            onPress={() => setDirectOnly((current) => !current)}
+          />
+          <ActionChip
+            label="Group pass"
+            icon="people-outline"
+            selected={groupPass}
+            onPress={() => setGroupPass((current) => !current)}
+          />
         </View>
       </Panel>
 
@@ -66,7 +171,13 @@ export default function TravelScreen() {
         </View>
         <View style={styles.optionList}>
           {travelOptions.map((option) => (
-            <TravelOptionRow key={option.id} option={option} maxCo2={maxCo2} />
+            <TravelOptionRow
+              key={option.id}
+              option={option}
+              maxCo2={maxCo2}
+              selected={option.id === selectedOptionId}
+              onPress={() => setSelectedOptionId(option.id)}
+            />
           ))}
         </View>
         <View style={styles.savingCard}>
@@ -74,7 +185,7 @@ export default function TravelScreen() {
             <Ionicons name="leaf" size={18} color={colors.primary} />
           </View>
           <View style={styles.savingCopy}>
-            <Text style={styles.savingTitle}>22.1 kg CO₂ saved</Text>
+            <Text style={styles.savingTitle}>{carbonSaved.toFixed(1)} kg CO₂ saved</Text>
             <Text style={styles.savingText}>
               Similar to powering an average festival cabin for 3.5 days.
             </Text>
@@ -87,20 +198,27 @@ export default function TravelScreen() {
         <View style={styles.journeyInner}>
           <View style={styles.journeyTopRow}>
             <View style={styles.journeyTags}>
-              <Pill label="Best Eco-Choice" icon="leaf-outline" compact />
-              <Pill label="Fastest" icon="flash-outline" tone="lavender" compact />
+              <Pill
+                label={selectedOption.recommended ? 'Best Eco-Choice' : 'Selected Route'}
+                icon={selectedOption.recommended ? 'leaf-outline' : 'checkmark-circle-outline'}
+                tone={selectedOption.recommended ? 'green' : 'lavender'}
+                compact
+              />
+              <Pill label={travelDates[dateIndex]} icon="calendar-outline" tone="lavender" compact />
             </View>
-            <Text style={styles.price}>{formatPrice(recommendedJourney.price)}</Text>
+            <Text style={styles.price}>{formatPrice(selectedOption.price)}</Text>
           </View>
 
-          <Text style={styles.journeyTitle}>GWR Green Express + Zero-Emission Shuttle</Text>
+          <Text style={styles.journeyTitle}>
+            {selectedOption.recommended ? 'GWR Green Express + Zero-Emission Shuttle' : selectedOption.name}
+          </Text>
           <View style={styles.journeyMeta}>
             <View>
-              <Text style={styles.timeStrong}>09:15 →</Text>
-              <Text style={styles.timeStrong}>10:45</Text>
+              <Text style={styles.timeStrong}>{selectedDetails.departureTime} →</Text>
+              <Text style={styles.timeStrong}>{selectedDetails.arrivalTime}</Text>
             </View>
             <View style={styles.metaDivider} />
-            <Text style={styles.metaText}>1 hr 30 min</Text>
+            <Text style={styles.metaText}>{selectedOption.duration}</Text>
             <View style={styles.metaDivider} />
             <Text style={styles.directText}>Direct{`\n`}Connection</Text>
           </View>
@@ -108,26 +226,30 @@ export default function TravelScreen() {
           <View style={styles.connectionCard}>
             <View style={styles.stopNumber}><Text style={styles.stopNumberText}>1</Text></View>
             <View style={styles.stopCopy}>
-              <Text style={styles.stopTitle}>Victoria Stn</Text>
-              <Text style={styles.stopDetail}>Train · 58m</Text>
+              <Text style={styles.stopTitle}>{selectedDetails.firstStop}</Text>
+              <Text style={styles.stopDetail}>{selectedDetails.firstDetail}</Text>
             </View>
             <Ionicons name="arrow-forward" size={16} color={colors.textMuted} />
             <View style={styles.stopNumber}><Text style={styles.stopNumberText}>2</Text></View>
             <View style={styles.stopCopy}>
-              <Text style={styles.stopTitle}>E-Shuttle</Text>
-              <Text style={styles.stopDetail}>Gate 4 · 32m</Text>
+              <Text style={styles.stopTitle}>{selectedDetails.secondStop}</Text>
+              <Text style={styles.stopDetail}>{selectedDetails.secondDetail}</Text>
             </View>
           </View>
 
           <View style={styles.rewardRow}>
             <Ionicons name="ribbon" size={20} color="#A57613" />
-            <Text style={styles.rewardText}>+100 Green Points on arrival</Text>
+            <Text style={styles.rewardText}>+{pointsEarned} Green Points on arrival</Text>
             <Text style={styles.syncedText}>WRISTBAND{`\n`}SYNCED</Text>
           </View>
 
           <PrimaryButton
-            label="Book Journey & Earn 100 Pts"
-            onPress={() => Alert.alert('Demo booking', 'Booking will be connected to a third-party travel API later.')}
+            label={bookedOptionId === selectedOption.id
+              ? 'Journey Saved'
+              : `Save Journey & Earn ${pointsEarned} Pts`}
+            icon={bookedOptionId === selectedOption.id ? 'checkmark-circle' : 'arrow-forward'}
+            disabled={bookedOptionId === selectedOption.id}
+            onPress={bookJourney}
           />
         </View>
       </Panel>
@@ -158,9 +280,23 @@ export default function TravelScreen() {
           </View>
         </View>
       </Panel>
+
+      <FeedbackSheet
+        visible={feedback !== null}
+        title={feedback?.title ?? ''}
+        message={feedback?.message ?? ''}
+        icon={feedback?.icon}
+        onClose={() => setFeedback(null)}
+      />
     </ScreenScaffold>
   );
 }
+
+type Feedback = {
+  title: string;
+  message: string;
+  icon: IconName;
+};
 
 const styles = StyleSheet.create({
   intro: { gap: 4 },

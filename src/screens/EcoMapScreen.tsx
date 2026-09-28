@@ -1,12 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { FeedbackSheet } from '@/components/FeedbackSheet';
 import { MockFestivalMap } from '@/components/MockFestivalMap';
 import { ScreenScaffold } from '@/components/ScreenScaffold';
-import { Panel, Pill, PrimaryButton } from '@/components/ui';
+import { ActionChip, Panel, Pill, PrimaryButton } from '@/components/ui';
 import { ecoFilterLabels, ecoLocations } from '@/data/mockData';
-import { EcoLocation, EcoLocationType } from '@/types/models';
+import { EcoLocation, EcoLocationType, IconName } from '@/types/models';
 import { formatDistance } from '@/utils/format';
 import { colors, radius, spacing } from '@/utils/theme';
 
@@ -15,14 +16,32 @@ type Filter = EcoLocationType | 'all';
 export default function EcoMapScreen() {
   const [selectedId, setSelectedId] = useState(ecoLocations[0].id);
   const [activeFilter, setActiveFilter] = useState<Filter>('all');
+  const [query, setQuery] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [navigationActive, setNavigationActive] = useState(false);
+  const [loggedLocations, setLoggedLocations] = useState<Set<string>>(new Set());
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
 
   const selected = useMemo(
     () => ecoLocations.find((location) => location.id === selectedId) ?? ecoLocations[0],
     [selectedId],
   );
 
+  const visibleLocations = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return ecoLocations.filter((location) => {
+      const matchesFilter = activeFilter === 'all' || location.type === activeFilter;
+      const matchesQuery = normalizedQuery.length === 0
+        || location.name.toLowerCase().includes(normalizedQuery)
+        || location.detail.toLowerCase().includes(normalizedQuery)
+        || ecoFilterLabels[location.type].toLowerCase().includes(normalizedQuery);
+      return matchesFilter && matchesQuery;
+    });
+  }, [activeFilter, query]);
+
   function selectFilter(filter: Filter) {
     setActiveFilter(filter);
+    setNavigationActive(false);
     if (filter !== 'all') {
       const firstMatch = ecoLocations.find((location) => location.type === filter);
       if (firstMatch) setSelectedId(firstMatch.id);
@@ -34,8 +53,57 @@ export default function EcoMapScreen() {
     setActiveFilter(location.type);
   }
 
+  function updateQuery(value: string) {
+    setQuery(value);
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) return;
+    const firstMatch = ecoLocations.find((location) =>
+      location.name.toLowerCase().includes(normalized)
+      || location.detail.toLowerCase().includes(normalized),
+    );
+    if (firstMatch) {
+      setSelectedId(firstMatch.id);
+      setActiveFilter('all');
+    }
+  }
+
+  function toggleNavigation() {
+    const nextValue = !navigationActive;
+    setNavigationActive(nextValue);
+    setFeedback({
+      title: nextValue ? 'Walking route started' : 'Walking route stopped',
+      message: nextValue
+        ? `${selected.name} is ${formatDistance(selected.distanceMeters)} away, about ${selected.walkMinutes} minute${selected.walkMinutes === 1 ? '' : 's'} on foot.`
+        : 'The demo walking route has been cleared.',
+      icon: nextValue ? 'navigate-circle-outline' : 'stop-circle-outline',
+    });
+  }
+
+  function logAction() {
+    if (loggedLocations.has(selected.id)) return;
+    setLoggedLocations((current) => new Set(current).add(selected.id));
+    setFeedback({
+      title: 'Green action logged',
+      message: `10 example points were added for visiting ${selected.name}.`,
+      icon: 'checkmark-circle-outline',
+    });
+  }
+
   return (
-    <ScreenScaffold title="Festival Eco Map" statusRight="GPS ±1.8m RTK · Demo">
+    <ScreenScaffold
+      title="Festival Eco Map"
+      statusRight="GPS ±1.8m RTK · Demo"
+      onNotifications={() => setFeedback({
+        title: 'Map update',
+        message: 'West Stage water has no queue. Central Cup Return currently has a 4-minute wait.',
+        icon: 'notifications-outline',
+      })}
+      onProfile={() => setFeedback({
+        title: 'Your map activity',
+        message: `${loggedLocations.size} sustainable map action${loggedLocations.size === 1 ? '' : 's'} logged in this session.`,
+        icon: 'person-outline',
+      })}
+    >
       <View style={styles.searchRow}>
         <View style={styles.searchBox}>
           <Ionicons name="search" size={19} color={colors.primary} />
@@ -43,35 +111,65 @@ export default function EcoMapScreen() {
             accessibilityLabel="Search eco map"
             placeholder="Find water, recycling, solar hubs..."
             placeholderTextColor="#818A82"
+            value={query}
+            onChangeText={updateQuery}
+            returnKeyType="search"
             style={styles.searchInput}
           />
-          <View style={styles.filterIcon}>
-            <Ionicons name="options-outline" size={18} color={colors.text} />
-          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={query ? 'Clear search' : 'Toggle map filters'}
+            accessibilityState={{ expanded: query ? undefined : filtersOpen }}
+            onPress={() => query ? updateQuery('') : setFiltersOpen((current) => !current)}
+            style={({ pressed }) => [styles.filterIcon, pressed && styles.pressed]}
+          >
+            <Ionicons name={query ? 'close' : 'options-outline'} size={18} color={colors.text} />
+          </Pressable>
         </View>
       </View>
 
       <View style={styles.quickChips}>
-        <Pill label="Chilled Water (Free)" icon="water" tone="white" />
-        <Pill label="Smart Cup Return (+10 pts)" icon="sync" tone="white" />
+        <ActionChip
+          label="Chilled Water (Free)"
+          icon="water"
+          selected={activeFilter === 'water'}
+          onPress={() => selectFilter('water')}
+        />
+        <ActionChip
+          label="Smart Cup Return (+10 pts)"
+          icon="sync"
+          selected={activeFilter === 'cup'}
+          onPress={() => selectFilter('cup')}
+        />
       </View>
 
-      <View style={styles.filterRow}>
-        <FilterChip label="All" active={activeFilter === 'all'} onPress={() => selectFilter('all')} />
-        {(Object.keys(ecoFilterLabels) as EcoLocationType[]).map((filter) => (
-          <FilterChip
-            key={filter}
-            label={ecoFilterLabels[filter]}
-            active={activeFilter === filter}
-            onPress={() => selectFilter(filter)}
-          />
-        ))}
-      </View>
+      {filtersOpen ? (
+        <View style={styles.filterRow}>
+          <FilterChip label="All" active={activeFilter === 'all'} onPress={() => selectFilter('all')} />
+          {(Object.keys(ecoFilterLabels) as EcoLocationType[]).map((filter) => (
+            <FilterChip
+              key={filter}
+              label={ecoFilterLabels[filter]}
+              active={activeFilter === filter}
+              onPress={() => selectFilter(filter)}
+            />
+          ))}
+        </View>
+      ) : null}
+
+      {visibleLocations.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="search-outline" size={24} color={colors.textMuted} />
+          <Text style={styles.emptyTitle}>No eco locations found</Text>
+          <Text style={styles.emptyText}>Try a different search or select All.</Text>
+        </View>
+      ) : null}
 
       <MockFestivalMap
-        locations={ecoLocations}
+        locations={visibleLocations}
         selectedId={selectedId}
         activeFilter={activeFilter}
+        navigationActive={navigationActive}
         onSelect={selectLocation}
       />
 
@@ -107,21 +205,40 @@ export default function EcoMapScreen() {
 
         <View style={styles.buttonStack}>
           <PrimaryButton
-            label="Start Walking Navigation"
-            icon="navigate-circle-outline"
-            onPress={() => Alert.alert('Demo navigation', `Walking directions to ${selected.name} will use GPS later.`)}
+            label={navigationActive ? 'Stop Walking Navigation' : 'Start Walking Navigation'}
+            icon={navigationActive ? 'stop-circle-outline' : 'navigate-circle-outline'}
+            onPress={toggleNavigation}
           />
           <PrimaryButton
-            label={selected.type === 'water' ? 'Log 750ml Refill (+10 Pts)' : 'Log Sustainable Action (+10 Pts)'}
-            icon="add-circle"
+            label={loggedLocations.has(selected.id)
+              ? 'Action Logged (+10 Pts)'
+              : selected.type === 'water'
+                ? 'Log 750ml Refill (+10 Pts)'
+                : 'Log Sustainable Action (+10 Pts)'}
+            icon={loggedLocations.has(selected.id) ? 'checkmark-circle' : 'add-circle'}
             variant="soft"
-            onPress={() => Alert.alert('Action logged', '10 example green points were added for this demo.')}
+            disabled={loggedLocations.has(selected.id)}
+            onPress={logAction}
           />
         </View>
       </Panel>
+
+      <FeedbackSheet
+        visible={feedback !== null}
+        title={feedback?.title ?? ''}
+        message={feedback?.message ?? ''}
+        icon={feedback?.icon}
+        onClose={() => setFeedback(null)}
+      />
     </ScreenScaffold>
   );
 }
+
+type Feedback = {
+  title: string;
+  message: string;
+  icon: IconName;
+};
 
 type FilterChipProps = {
   label: string;
@@ -196,6 +313,15 @@ const styles = StyleSheet.create({
   filterChipActive: { borderColor: colors.primary, backgroundColor: colors.primary },
   filterChipText: { color: colors.textMuted, fontSize: 9, fontWeight: '700' },
   filterChipTextActive: { color: colors.surface },
+  emptyState: {
+    alignItems: 'center',
+    gap: 4,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+  },
+  emptyTitle: { color: colors.text, fontSize: 13, fontWeight: '800' },
+  emptyText: { color: colors.textMuted, fontSize: 10 },
   locationHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
   locationTitleBlock: { flex: 1 },
   locationTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
