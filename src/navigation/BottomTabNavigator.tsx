@@ -39,7 +39,7 @@ export default function BottomTabNavigator() {
         options={{
           title: 'Travel',
           tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons name={focused ? 'train' : 'train-outline'} color={color} size={size} />
+            <Ionicons name={focused ? 'bus' : 'bus-outline'} color={color} size={size} />
           ),
         }}
       />

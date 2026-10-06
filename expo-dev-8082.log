@@ -1,0 +1,19 @@
+
+> festival-green-companion@1.0.0 start
+> expo start --clear --port 8082
+
+Starting project at C:\Users\karim\Documents\Second Year Fontys\Mobile Apps Semester 4\festival-green-companion
+Using src/app as the root directory for Expo Router.
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Waiting on http://localhost:8082
+
+Logs for your project will appear below.
+Android Bundled 10548ms node_modules\expo-router\entry.js (1553 modules)
+Web Bundled 4733ms node_modules\expo-router\entry.js (938 modules)
+Web  INFO  %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+Web  LOG  Running application "main" with appParams:
+ {"hydrate": undefined, "rootTag": "#root"} 
+Development-level warnings: ON.
+Performance optimizations: OFF.
