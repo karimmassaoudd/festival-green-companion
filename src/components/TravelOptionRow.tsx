@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     borderRadius: radius.md,
   },
-  selectedContainer: { borderColor: '#B8DCC0', backgroundColor: '#F1F9F2' },
+  selectedContainer: { borderColor: colors.mint, backgroundColor: colors.primarySoft },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',

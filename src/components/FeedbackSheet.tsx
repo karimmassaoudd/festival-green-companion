@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(15, 24, 17, 0.44)',
+    backgroundColor: 'rgba(7, 35, 25, 0.48)',
   },
   sheet: {
     alignItems: 'center',
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     height: 5,
     marginBottom: spacing.xl,
     borderRadius: radius.round,
-    backgroundColor: '#D7DDD8',
+    backgroundColor: colors.border,
   },
   iconCircle: {
     width: 58,
