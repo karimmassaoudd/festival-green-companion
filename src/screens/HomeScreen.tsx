@@ -9,7 +9,7 @@ import { ProgressRing } from '@/components/ProgressRing';
 import { QuestList } from '@/components/QuestList';
 import { ScreenScaffold } from '@/components/ScreenScaffold';
 import { ToolCard } from '@/components/ToolCard';
-import { MetricTile, Panel, Pill, SectionTitle } from '@/components/ui';
+import { MetricTile, Panel, SectionTitle } from '@/components/ui';
 import { festivalTools, initialQuests } from '@/data/mockData';
 import { EcoQuest, FestivalTool, IconName } from '@/types/models';
 import { colors, radius, spacing } from '@/utils/theme';
@@ -107,18 +107,6 @@ export default function HomeScreen() {
           <Ionicons name="wallet-outline" size={17} color={colors.textMuted} />
         </Pressable>
       </Panel>
-
-      <LinearGradient colors={['#16825F', '#0C6047']} style={styles.festivalStatus}>
-        <View style={styles.stageIcon}>
-          <Ionicons name="grid-outline" size={23} color={colors.surface} />
-        </View>
-        <View style={styles.statusCopy}>
-          <Text style={styles.statusEyebrow}>PYRAMID STAGE ENERGY · LIVE</Text>
-          <Text style={styles.statusTitle}>100% Clean Solar Grid</Text>
-          <Text style={styles.statusSubtitle}>Battery storage at 94% · Zero emissions</Text>
-        </View>
-        <Pill label="OPTIMAL" tone="white" compact />
-      </LinearGradient>
 
       <Panel>
         <View style={styles.impactHeader}>
@@ -255,26 +243,6 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     backgroundColor: colors.surfaceMuted,
   },
-  festivalStatus: {
-    minHeight: 98,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-  },
-  stageIcon: {
-    width: 42,
-    height: 42,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-  },
-  statusCopy: { flex: 1 },
-  statusEyebrow: { color: '#C9F3E1', fontSize: 9, fontWeight: '700' },
-  statusTitle: { marginTop: 3, color: colors.surface, fontSize: 17, fontWeight: '700' },
-  statusSubtitle: { marginTop: 3, color: '#D7EFE5', fontSize: 10 },
   impactHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   impactCopy: { flex: 1 },
   cardEyebrow: { color: colors.primary, fontSize: 9, fontWeight: '800' },
