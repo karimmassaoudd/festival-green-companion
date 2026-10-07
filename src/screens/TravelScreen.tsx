@@ -8,7 +8,34 @@ import { cardShadow, colors, radius, spacing } from '@/utils/theme';
 
 export default function TravelScreen() {
   const [booked, setBooked] = useState(false);
-  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [feedback, setFeedback] = useState<TravelFeedback | null>(null);
+
+  function showTravelOptions() {
+    setFeedback({
+      title: 'Three travel options',
+      message: 'Coach is recommended for this demo. Train and festival carpool are also available from London Victoria.',
+      icon: 'options-outline',
+    });
+  }
+
+  function showTravelProfile() {
+    setFeedback({
+      title: 'Your travel impact',
+      message: booked
+        ? 'Your coach is booked. You saved an estimated 20.8 kg CO₂ and earned 50 Green Points.'
+        : 'Book the recommended coach to save an estimated 20.8 kg CO₂ and earn 50 Green Points.',
+      icon: 'person-outline',
+    });
+  }
+
+  function bookCoach() {
+    setBooked(true);
+    setFeedback({
+      title: 'Coach booked',
+      message: 'Your coach is saved and 50 Green Points will be added to your festival wristband.',
+      icon: 'checkmark-circle-outline',
+    });
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -26,10 +53,22 @@ export default function TravelScreen() {
             </View>
 
             <View style={styles.headerActions}>
-              <Ionicons name="options-outline" size={21} color={colors.teal} />
-              <View style={styles.profileButton}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="View travel options"
+                onPress={showTravelOptions}
+                style={({ pressed }) => [styles.headerIconButton, pressed && styles.pressed]}
+              >
+                <Ionicons name="options-outline" size={21} color={colors.teal} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="View travel profile"
+                onPress={showTravelProfile}
+                style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}
+              >
                 <Ionicons name="person-outline" size={18} color={colors.surface} />
-              </View>
+              </Pressable>
             </View>
           </View>
 
@@ -44,10 +83,15 @@ export default function TravelScreen() {
               </View>
             </View>
 
-            <View style={styles.optionPill}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Show three travel options"
+              onPress={showTravelOptions}
+              style={({ pressed }) => [styles.optionPill, pressed && styles.pressed]}
+            >
               <Ionicons name="settings-outline" size={13} color={colors.amber} />
               <Text style={styles.optionPillText}>3 Options</Text>
-            </View>
+            </Pressable>
           </View>
 
           <View style={styles.travelCard}>
@@ -104,10 +148,7 @@ export default function TravelScreen() {
               accessibilityRole="button"
               accessibilityState={{ disabled: booked }}
               disabled={booked}
-              onPress={() => {
-                setBooked(true);
-                setFeedbackVisible(true);
-              }}
+              onPress={bookCoach}
               style={({ pressed }) => [
                 styles.bookButton,
                 booked && styles.bookButtonDisabled,
@@ -155,16 +196,22 @@ export default function TravelScreen() {
         </ScrollView>
 
         <FeedbackSheet
-          visible={feedbackVisible}
-          title="Coach booked"
-          message="Your coach is saved and 50 Green Points will be added to your festival wristband."
-          icon="checkmark-circle-outline"
-          onClose={() => setFeedbackVisible(false)}
+          visible={feedback !== null}
+          title={feedback?.title ?? ''}
+          message={feedback?.message ?? ''}
+          icon={feedback?.icon}
+          onClose={() => setFeedback(null)}
         />
       </View>
     </SafeAreaView>
   );
 }
+
+type TravelFeedback = {
+  title: string;
+  message: string;
+  icon: keyof typeof Ionicons.glyphMap;
+};
 
 type MetricProps = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -234,6 +281,14 @@ const styles = StyleSheet.create({
   },
   brandText: { color: colors.text, fontSize: 20, fontWeight: '800' },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  headerIconButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 19,
+    backgroundColor: colors.tealSoft,
+  },
   profileButton: {
     width: 38,
     height: 38,

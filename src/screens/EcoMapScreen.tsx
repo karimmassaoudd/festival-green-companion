@@ -89,6 +89,18 @@ export default function EcoMapScreen() {
     });
   }
 
+  function recenterMap() {
+    setSelectedId(ecoLocations[0].id);
+    setActiveFilter('all');
+    setQuery('');
+    setNavigationActive(false);
+    setFeedback({
+      title: 'Map recentered',
+      message: 'The map is centered on your demo position at Acoustic Grove. All eco locations are visible again.',
+      icon: 'locate-outline',
+    });
+  }
+
   return (
     <ScreenScaffold
       title="Festival Eco Map"
@@ -171,6 +183,7 @@ export default function EcoMapScreen() {
         activeFilter={activeFilter}
         navigationActive={navigationActive}
         onSelect={selectLocation}
+        onRecenter={recenterMap}
       />
 
       <Panel>

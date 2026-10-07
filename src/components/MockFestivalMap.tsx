@@ -19,6 +19,7 @@ type MockFestivalMapProps = {
   activeFilter: EcoLocationType | 'all';
   navigationActive?: boolean;
   onSelect: (location: EcoLocation) => void;
+  onRecenter: () => void;
 };
 
 const markerColors: Record<EcoLocationType, string> = {
@@ -34,6 +35,7 @@ export function MockFestivalMap({
   activeFilter,
   navigationActive = false,
   onSelect,
+  onRecenter,
 }: MockFestivalMapProps) {
   const selectedLocation = locations.find((location) => location.id === selectedId);
   const destinationX = selectedLocation ? selectedLocation.x * 3.5 : 178;
@@ -203,9 +205,14 @@ export function MockFestivalMap({
         <Text style={styles.weatherText}>28°C</Text>
       </View>
 
-      <View style={styles.compass}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Recenter map on my location"
+        onPress={onRecenter}
+        style={({ pressed }) => [styles.compass, pressed && styles.mapPressed]}
+      >
         <Ionicons name="compass-outline" size={22} color={colors.primaryDark} />
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -380,4 +387,5 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     backgroundColor: 'rgba(255,255,255,0.94)',
   },
+  mapPressed: { opacity: 0.72, transform: [{ scale: 0.94 }] },
 });
