@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FeedbackSheet } from '@/components/FeedbackSheet';
@@ -62,6 +62,13 @@ export default function TravelScreen() {
                 <Text style={styles.studentText}>STUDENT SAVER</Text>
               </View>
             </View>
+
+            <Image
+              source={require('../../assets/festival-travel-coach.jpg')}
+              accessibilityLabel="Festival coach arriving at the festival entrance"
+              resizeMode="cover"
+              style={styles.coachImage}
+            />
 
             <View style={styles.coachRow}>
               <View style={styles.coachIcon}>
@@ -295,6 +302,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.tealSoft,
   },
   studentText: { color: colors.teal, fontSize: 8, fontWeight: '800' },
+  coachImage: {
+    width: '100%',
+    height: 112,
+    marginTop: spacing.md,
+    borderRadius: radius.md,
+  },
   coachRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
   coachIcon: {
     width: 48,

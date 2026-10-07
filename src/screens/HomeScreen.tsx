@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FeedbackSheet } from '@/components/FeedbackSheet';
 import { ProgressRing } from '@/components/ProgressRing';
@@ -108,6 +108,40 @@ export default function HomeScreen() {
         </Pressable>
       </Panel>
 
+      <ImageBackground
+        source={require('../../assets/festival-home-hero.jpg')}
+        accessibilityLabel="Festival crowd watching the main stage at sunset"
+        style={styles.highlightCard}
+        imageStyle={styles.highlightImage}
+      >
+        <LinearGradient
+          colors={['rgba(12,31,22,0.08)', 'rgba(12,31,22,0.88)']}
+          style={styles.highlightOverlay}
+        >
+          <View style={styles.highlightContent}>
+            <Text style={styles.highlightEyebrow}>{"TONIGHT'S HIGHLIGHT"}</Text>
+            <Text style={styles.highlightTitle}>The Green Sparks Live</Text>
+            <Text style={styles.highlightSubtitle}>Solar Arch Stage · 21:30</Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            onPress={toggleReminder}
+            style={({ pressed }) => [
+              styles.remindButton,
+              reminderSet && styles.remindButtonActive,
+              pressed && styles.pressed,
+            ]}
+          >
+            <Ionicons
+              name={reminderSet ? 'checkmark-circle' : 'notifications-outline'}
+              size={14}
+              color={colors.surface}
+            />
+            <Text style={styles.remindText}>{reminderSet ? 'Added' : 'Remind'}</Text>
+          </Pressable>
+        </LinearGradient>
+      </ImageBackground>
+
       <Panel>
         <View style={styles.impactHeader}>
           <View style={styles.impactCopy}>
@@ -159,32 +193,6 @@ export default function HomeScreen() {
       </View>
 
       <QuestList quests={quests} onToggle={toggleQuest} />
-
-      <LinearGradient colors={['#174D35', '#287A66', '#E9654F']} style={styles.highlightCard}>
-        <View style={styles.highlightDecorationOne} />
-        <View style={styles.highlightDecorationTwo} />
-        <View style={styles.highlightContent}>
-          <Text style={styles.highlightEyebrow}>{"TONIGHT'S HIGHLIGHT"}</Text>
-          <Text style={styles.highlightTitle}>The Green Sparks Live</Text>
-          <Text style={styles.highlightSubtitle}>Solar Arch Stage · 21:30</Text>
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          onPress={toggleReminder}
-          style={({ pressed }) => [
-            styles.remindButton,
-            reminderSet && styles.remindButtonActive,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Ionicons
-            name={reminderSet ? 'checkmark-circle' : 'notifications-outline'}
-            size={14}
-            color={colors.surface}
-          />
-          <Text style={styles.remindText}>{reminderSet ? 'Added' : 'Remind'}</Text>
-        </Pressable>
-      </LinearGradient>
 
       <FeedbackSheet
         visible={feedback !== null}
@@ -272,32 +280,17 @@ const styles = StyleSheet.create({
   toolsSection: { gap: spacing.md },
   toolGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: spacing.md },
   highlightCard: {
-    minHeight: 126,
+    minHeight: 164,
     overflow: 'hidden',
+    borderRadius: radius.lg,
+  },
+  highlightImage: { borderRadius: radius.lg },
+  highlightOverlay: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-end',
     padding: spacing.lg,
     borderRadius: radius.lg,
-  },
-  highlightDecorationOne: {
-    position: 'absolute',
-    width: 170,
-    height: 170,
-    right: -30,
-    top: -80,
-    borderWidth: 22,
-    borderColor: 'rgba(169,224,169,0.10)',
-    borderRadius: 85,
-  },
-  highlightDecorationTwo: {
-    position: 'absolute',
-    width: 110,
-    height: 110,
-    left: 60,
-    top: -65,
-    borderWidth: 16,
-    borderColor: 'rgba(255,255,255,0.07)',
-    borderRadius: 55,
   },
   highlightContent: { flex: 1 },
   highlightEyebrow: { color: '#A8DFC8', fontSize: 9, fontWeight: '800' },
