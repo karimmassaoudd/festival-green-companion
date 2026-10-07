@@ -17,3 +17,118 @@ Web  LOG  Running application "main" with appParams:
  {"hydrate": undefined, "rootTag": "#root"} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
+Unable to resolve "@/components/ScreenScaffold" from "src\screens\HomeScreen.tsx"
+[0m [90m  8 |[39m [36mimport[39m { [33mProgressRing[39m } [36mfrom[39m [32m'@/components/ProgressRing'[39m[33m;[39m
+ [90m  9 |[39m [36mimport[39m { [33mQuestList[39m } [36mfrom[39m [32m'@/components/QuestList'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mScreenScaffold[39m } [36mfrom[39m [32m'@/components/ScreenScaffold'[39m[33m;[39m
+ [90m    |[39m                                 [31m[1m^[22m[39m
+ [90m 11 |[39m [36mimport[39m { [33mToolCard[39m } [36mfrom[39m [32m'@/components/ToolCard'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { [33mMetricTile[39m[33m,[39m [33mPanel[39m[33m,[39m [33mPill[39m[33m,[39m [33mSectionTitle[39m } [36mfrom[39m [32m'@/components/ui'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m { festivalTools[33m,[39m initialQuests } [36mfrom[39m [32m'@/data/mockData'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\screens\HomeScreen.tsx
+ | import "@/components/ScreenScaffold"
+
+ src\app\(tabs)\index.tsx
+ | import "@/screens/HomeScreen"
+
+ src\app (require.context)
+
+Unable to resolve "@/components/ScreenScaffold" from "src\screens\HomeScreen.tsx"
+[0m [90m  8 |[39m [36mimport[39m { [33mProgressRing[39m } [36mfrom[39m [32m'@/components/ProgressRing'[39m[33m;[39m
+ [90m  9 |[39m [36mimport[39m { [33mQuestList[39m } [36mfrom[39m [32m'@/components/QuestList'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mScreenScaffold[39m } [36mfrom[39m [32m'@/components/ScreenScaffold'[39m[33m;[39m
+ [90m    |[39m                                 [31m[1m^[22m[39m
+ [90m 11 |[39m [36mimport[39m { [33mToolCard[39m } [36mfrom[39m [32m'@/components/ToolCard'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { [33mMetricTile[39m[33m,[39m [33mPanel[39m[33m,[39m [33mPill[39m[33m,[39m [33mSectionTitle[39m } [36mfrom[39m [32m'@/components/ui'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m { festivalTools[33m,[39m initialQuests } [36mfrom[39m [32m'@/data/mockData'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\screens\HomeScreen.tsx
+ | import "@/components/ScreenScaffold"
+
+ src\app\(tabs)\index.tsx
+ | import "@/screens/HomeScreen"
+
+ src\app (require.context)
+
+Web  ERROR  [UnableToResolveError: Unable to resolve module @/components/ScreenScaffold from C:\Users\karim\Documents\Second Year Fontys\Mobile Apps Semester 4\festival-green-companion\src\screens\HomeScreen.tsx: @/components/ScreenScaffold could not be found within the project or in these directories:
+  node_modules
+  ..\..\..\..\node_modules
+   8 | import { ProgressRing } from '@/components/ProgressRing';
+   9 | import { QuestList } from '@/components/QuestList';
+> 10 | import { ScreenScaffold } from '@/components/ScreenScaffold';
+     |                                 ^
+  11 | import { ToolCard } from '@/components/ToolCard';
+  12 | import { MetricTile, Panel, Pill, SectionTitle } from '@/components/ui';
+  13 | import { festivalTools, initialQuests } from '@/data/mockData';]
+Unable to resolve "@/components/ScreenScaffold" from "src\screens\HomeScreen.tsx"
+[0m [90m  8 |[39m [36mimport[39m { [33mProgressRing[39m } [36mfrom[39m [32m'@/components/ProgressRing'[39m[33m;[39m
+ [90m  9 |[39m [36mimport[39m { [33mQuestList[39m } [36mfrom[39m [32m'@/components/QuestList'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mScreenScaffold[39m } [36mfrom[39m [32m'@/components/ScreenScaffold'[39m[33m;[39m
+ [90m    |[39m                                 [31m[1m^[22m[39m
+ [90m 11 |[39m [36mimport[39m { [33mToolCard[39m } [36mfrom[39m [32m'@/components/ToolCard'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { [33mMetricTile[39m[33m,[39m [33mPanel[39m[33m,[39m [33mPill[39m[33m,[39m [33mSectionTitle[39m } [36mfrom[39m [32m'@/components/ui'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m { festivalTools[33m,[39m initialQuests } [36mfrom[39m [32m'@/data/mockData'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\screens\HomeScreen.tsx
+ | import "@/components/ScreenScaffold"
+
+ src\app\(tabs)\index.tsx
+ | import "@/screens/HomeScreen"
+
+ src\app (require.context)
+
+Unable to resolve "@/components/ScreenScaffold" from "src\screens\HomeScreen.tsx"
+[0m [90m  8 |[39m [36mimport[39m { [33mProgressRing[39m } [36mfrom[39m [32m'@/components/ProgressRing'[39m[33m;[39m
+ [90m  9 |[39m [36mimport[39m { [33mQuestList[39m } [36mfrom[39m [32m'@/components/QuestList'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mScreenScaffold[39m } [36mfrom[39m [32m'@/components/ScreenScaffold'[39m[33m;[39m
+ [90m    |[39m                                 [31m[1m^[22m[39m
+ [90m 11 |[39m [36mimport[39m { [33mToolCard[39m } [36mfrom[39m [32m'@/components/ToolCard'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { [33mMetricTile[39m[33m,[39m [33mPanel[39m[33m,[39m [33mPill[39m[33m,[39m [33mSectionTitle[39m } [36mfrom[39m [32m'@/components/ui'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m { festivalTools[33m,[39m initialQuests } [36mfrom[39m [32m'@/data/mockData'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\screens\HomeScreen.tsx
+ | import "@/components/ScreenScaffold"
+
+ src\app\(tabs)\index.tsx
+ | import "@/screens/HomeScreen"
+
+ src\app (require.context)
+
+Web  ERROR  [UnableToResolveError: Unable to resolve module @/components/ScreenScaffold from C:\Users\karim\Documents\Second Year Fontys\Mobile Apps Semester 4\festival-green-companion\src\screens\HomeScreen.tsx: @/components/ScreenScaffold could not be found within the project or in these directories:
+  node_modules
+  ..\..\..\..\node_modules
+   8 | import { ProgressRing } from '@/components/ProgressRing';
+   9 | import { QuestList } from '@/components/QuestList';
+> 10 | import { ScreenScaffold } from '@/components/ScreenScaffold';
+     |                                 ^
+  11 | import { ToolCard } from '@/components/ToolCard';
+  12 | import { MetricTile, Panel, Pill, SectionTitle } from '@/components/ui';
+  13 | import { festivalTools, initialQuests } from '@/data/mockData';]
+Web Bundled 49ms node_modules\expo-router\entry.js (1 module)
+Web  INFO  %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+Web  LOG  Running application "main" with appParams:
+ {"hydrate": undefined, "rootTag": "#root"} 
+Development-level warnings: ON.
+Performance optimizations: OFF.
+Web Bundled 40ms node_modules\expo-router\entry.js (1 module)
+Web  INFO  %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+Web  LOG  Running application "main" with appParams:
+ {"hydrate": undefined, "rootTag": "#root"} 
+Development-level warnings: ON.
+Performance optimizations: OFF.
+Web  WARN  "shadow*" style props are deprecated. Use "boxShadow".
+Web Bundled 1083ms node_modules\expo-router\entry.js (1 module)
+Web  INFO  %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+Web  LOG  Running application "main" with appParams:
+ {"hydrate": undefined, "rootTag": "#root"} 
+Development-level warnings: ON.
+Performance optimizations: OFF.

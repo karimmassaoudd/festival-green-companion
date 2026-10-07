@@ -14,12 +14,9 @@ export function AppHeader({ title, onNotifications, onProfile }: AppHeaderProps)
     <View style={styles.container}>
       <View style={styles.brandRow}>
         <View style={styles.logo}>
-          <Ionicons name="leaf-outline" size={21} color={colors.primary} />
+          <Ionicons name="musical-notes" size={19} color={colors.surface} />
         </View>
-        <View>
-          <Text style={styles.eyebrow}>ITERATION 3 · FINAL</Text>
-          <Text style={styles.title}>{title}</Text>
-        </View>
+        <Text style={styles.title}>{title}</Text>
       </View>
 
       <View style={styles.actions}>
@@ -60,24 +57,17 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   logo: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
-    backgroundColor: colors.primarySoft,
-  },
-  eyebrow: {
-    color: colors.primary,
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.2,
+    borderRadius: 18,
+    backgroundColor: colors.coral,
   },
   title: {
-    marginTop: 1,
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '800',
   },
   actions: {
     flexDirection: 'row',

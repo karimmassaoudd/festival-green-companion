@@ -147,7 +147,7 @@ export function MetricTile({ label, value, icon, accent = false, trailing }: Met
 }
 
 const pillTextColors = {
-  green: colors.primaryDark,
+  green: colors.eco,
   lavender: colors.primaryDark,
   amber: '#74530A',
   white: colors.primaryDark,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     minHeight: 22,
     paddingHorizontal: 8,
   },
-  greenPill: { backgroundColor: colors.primarySoft },
+  greenPill: { backgroundColor: colors.ecoSoft },
   lavenderPill: { backgroundColor: colors.lavender },
   amberPill: { backgroundColor: colors.amberSoft },
   whitePill: { backgroundColor: colors.surface },

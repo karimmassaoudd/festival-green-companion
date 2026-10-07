@@ -68,7 +68,7 @@ export default function HomeScreen() {
 
   return (
     <ScreenScaffold
-      title="Home Dashboard"
+      title="Festival Home"
       onNotifications={() => setFeedback({
         title: 'Festival updates',
         message: 'Water stations are quiet and the Pyramid Stage is running on 100% stored solar power.',
@@ -160,7 +160,7 @@ export default function HomeScreen() {
 
       <QuestList quests={quests} onToggle={toggleQuest} />
 
-      <LinearGradient colors={['#073C2D', '#0D6046', '#092F25']} style={styles.highlightCard}>
+      <LinearGradient colors={['#174D35', '#287A66', '#E9654F']} style={styles.highlightCard}>
         <View style={styles.highlightDecorationOne} />
         <View style={styles.highlightDecorationTwo} />
         <View style={styles.highlightContent}>

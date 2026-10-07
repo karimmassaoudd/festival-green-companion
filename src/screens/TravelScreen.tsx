@@ -19,24 +19,18 @@ export default function TravelScreen() {
         >
           <View style={styles.header}>
             <View style={styles.brand}>
-              <Ionicons name="leaf-outline" size={20} color={colors.primary} />
-              <Text style={styles.brandText}>Travel Options</Text>
+              <View style={styles.brandMark}>
+                <Ionicons name="musical-notes" size={17} color={colors.surface} />
+              </View>
+              <Text style={styles.brandText}>Festival Travel</Text>
             </View>
 
             <View style={styles.headerActions}>
-              <Ionicons name="options-outline" size={21} color={colors.text} />
+              <Ionicons name="options-outline" size={21} color={colors.teal} />
               <View style={styles.profileButton}>
                 <Ionicons name="person-outline" size={18} color={colors.surface} />
               </View>
             </View>
-          </View>
-
-          <View style={styles.iterationRow}>
-            <View style={styles.iterationPill}>
-              <View style={styles.dot} />
-              <Text style={styles.iterationText}>ITERATION 3 · FINAL DESIGN</Text>
-            </View>
-            <Text style={styles.caseStudy}>UX Case Study</Text>
           </View>
 
           <View style={styles.titleRow}>
@@ -51,7 +45,7 @@ export default function TravelScreen() {
             </View>
 
             <View style={styles.optionPill}>
-              <Ionicons name="settings-outline" size={13} color={colors.primary} />
+              <Ionicons name="settings-outline" size={13} color={colors.amber} />
               <Text style={styles.optionPillText}>3 Options</Text>
             </View>
           </View>
@@ -61,7 +55,7 @@ export default function TravelScreen() {
 
             <View style={styles.badgeRow}>
               <View style={styles.recommendedBadge}>
-                <Ionicons name="star" size={13} color={colors.primary} />
+                <Ionicons name="star" size={13} color={colors.eco} />
                 <Text style={styles.recommendedText}>Recommended · Best Option</Text>
               </View>
               <View style={styles.studentBadge}>
@@ -195,20 +189,20 @@ type PerkRowProps = {
 function PerkRow({ icon, text, strong = false }: PerkRowProps) {
   return (
     <View style={styles.perkRow}>
-      <Ionicons name={icon} size={17} color={colors.primary} />
+      <Ionicons name={icon} size={17} color={strong ? colors.eco : colors.teal} />
       <Text style={[styles.perkText, strong && styles.perkTextStrong]}>{text}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F7F6FD' },
+  safeArea: { flex: 1, backgroundColor: colors.background },
   page: {
     width: '100%',
     maxWidth: 440,
     flex: 1,
     alignSelf: 'center',
-    backgroundColor: '#F7F6FD',
+    backgroundColor: colors.background,
   },
   content: {
     gap: spacing.md,
@@ -222,8 +216,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  brandText: { color: '#13172A', fontSize: 18, fontWeight: '700' },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  brandMark: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    backgroundColor: colors.coral,
+  },
+  brandText: { color: colors.text, fontSize: 20, fontWeight: '800' },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   profileButton: {
     width: 38,
@@ -231,34 +233,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 19,
-    backgroundColor: '#28743B',
-  },
-  iterationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  iterationPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 11,
-    paddingVertical: 6,
-    borderRadius: radius.round,
-    backgroundColor: '#E1F1E5',
-  },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primary },
-  iterationText: { color: colors.primary, fontSize: 10, fontWeight: '800' },
-  caseStudy: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    overflow: 'hidden',
-    borderRadius: radius.round,
-    color: colors.textMuted,
-    fontSize: 9,
-    fontWeight: '700',
-    backgroundColor: '#EEF0FA',
+    backgroundColor: colors.primary,
   },
   titleRow: {
     flexDirection: 'row',
@@ -267,9 +242,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   titleBlock: { flex: 1 },
-  pageTitle: { color: '#121729', fontSize: 25, fontWeight: '800' },
+  pageTitle: { color: colors.text, fontSize: 25, fontWeight: '800' },
   routeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 },
-  routeText: { color: '#24293A', fontSize: 13 },
+  routeText: { color: colors.text, fontSize: 13 },
   destinationText: { color: colors.primary, fontSize: 13, fontWeight: '700' },
   optionPill: {
     flexDirection: 'row',
@@ -278,9 +253,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 7,
     borderRadius: radius.round,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.amberSoft,
   },
-  optionPillText: { color: colors.primary, fontSize: 10, fontWeight: '700' },
+  optionPillText: { color: '#76520E', fontSize: 10, fontWeight: '700' },
   travelCard: {
     overflow: 'hidden',
     padding: spacing.lg,
@@ -295,7 +270,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 5,
-    backgroundColor: '#6AC47A',
+    backgroundColor: colors.coral,
   },
   badgeRow: {
     flexDirection: 'row',
@@ -310,16 +285,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: radius.round,
-    backgroundColor: '#DBF4E0',
+    backgroundColor: colors.ecoSoft,
   },
-  recommendedText: { color: colors.primary, fontSize: 10, fontWeight: '700' },
+  recommendedText: { color: colors.eco, fontSize: 10, fontWeight: '700' },
   studentBadge: {
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: radius.round,
-    backgroundColor: '#EEF0FA',
+    backgroundColor: colors.tealSoft,
   },
-  studentText: { color: colors.primaryDark, fontSize: 8, fontWeight: '800' },
+  studentText: { color: colors.teal, fontSize: 8, fontWeight: '800' },
   coachRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
   coachIcon: {
     width: 48,
@@ -330,10 +305,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
   },
   coachCopy: { flex: 1 },
-  coachTitle: { color: '#141929', fontSize: 21, fontWeight: '800' },
+  coachTitle: { color: colors.text, fontSize: 21, fontWeight: '800' },
   coachSubtitle: { marginTop: 2, color: colors.textMuted, fontSize: 12 },
   priceBlock: { alignItems: 'flex-end' },
-  price: { color: colors.primary, fontSize: 30, fontWeight: '800' },
+  price: { color: colors.coral, fontSize: 30, fontWeight: '800' },
   returnText: { color: colors.text, fontSize: 9 },
   metrics: {
     flexDirection: 'row',
@@ -341,7 +316,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     padding: 10,
     borderRadius: radius.md,
-    backgroundColor: '#F0F0FC',
+    backgroundColor: colors.tealSoft,
   },
   metric: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   metricIcon: {
@@ -352,27 +327,27 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: colors.surface,
   },
-  metricDivider: { width: 1, height: 28, marginHorizontal: 6, backgroundColor: '#DADDEC' },
+  metricDivider: { width: 1, height: 28, marginHorizontal: 6, backgroundColor: '#C9DDDF' },
   metricLabel: { color: colors.textMuted, fontSize: 8, fontWeight: '800' },
-  metricValue: { marginTop: 1, color: '#1A2030', fontSize: 13, fontWeight: '800' },
-  metricValueAccent: { color: colors.primary },
+  metricValue: { marginTop: 1, color: colors.text, fontSize: 13, fontWeight: '800' },
+  metricValueAccent: { color: colors.eco },
   carbonBox: {
     marginTop: spacing.md,
     padding: 10,
     borderRadius: radius.sm,
-    backgroundColor: '#F2F4FD',
+    backgroundColor: colors.primarySoft,
   },
   carbonCopy: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
-  savingText: { color: colors.primary, fontSize: 9, fontWeight: '700' },
+  savingText: { color: colors.eco, fontSize: 9, fontWeight: '700' },
   carText: { color: colors.text, fontSize: 9 },
   progressTrack: {
     height: 7,
     overflow: 'hidden',
     marginTop: 7,
     borderRadius: radius.round,
-    backgroundColor: '#D8DEF5',
+    backgroundColor: '#D4E4D9',
   },
-  progressFill: { width: '14%', height: '100%', borderRadius: radius.round, backgroundColor: colors.primary },
+  progressFill: { width: '14%', height: '100%', borderRadius: radius.round, backgroundColor: colors.eco },
   bookButton: {
     minHeight: 49,
     flexDirection: 'row',
@@ -381,9 +356,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginTop: spacing.lg,
     borderRadius: radius.round,
-    backgroundColor: '#24723A',
+    backgroundColor: colors.primary,
   },
-  bookButtonDisabled: { backgroundColor: '#4E8D5A' },
+  bookButtonDisabled: { backgroundColor: '#71947E' },
   bookButtonText: { color: colors.surface, fontSize: 14, fontWeight: '700' },
   perksCard: {
     gap: 10,
@@ -406,16 +381,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.sm,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.amberSoft,
   },
-  perksTitle: { flex: 1, color: '#151A29', fontSize: 16, fontWeight: '800' },
+  perksTitle: { flex: 1, color: colors.text, fontSize: 16, fontWeight: '800' },
   includedBadge: {
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: radius.round,
-    backgroundColor: '#DDF2E2',
+    backgroundColor: colors.ecoSoft,
   },
-  includedText: { color: colors.primary, fontSize: 8, fontWeight: '800' },
+  includedText: { color: colors.eco, fontSize: 8, fontWeight: '800' },
   perkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
   perkText: { flex: 1, color: colors.textMuted, fontSize: 11, lineHeight: 15 },
   perkTextStrong: { color: colors.text, fontWeight: '600' },
