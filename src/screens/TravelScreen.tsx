@@ -1,41 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { FeedbackSheet } from '@/components/FeedbackSheet';
-import { cardShadow, colors, radius, spacing } from '@/utils/theme';
+import { useTrip } from '@/context/TripContext';
+import { travelOptions } from '@/data/mockData';
+import { TravelOption } from '@/types/models';
+import { colors } from '@/utils/theme';
 
 export default function TravelScreen() {
-  const [booked, setBooked] = useState(false);
-  const [feedback, setFeedback] = useState<TravelFeedback | null>(null);
-
-  function showTravelOptions() {
-    setFeedback({
-      title: 'Three travel options',
-      message: 'Coach is recommended for this demo. Train and festival carpool are also available from London Victoria.',
-      icon: 'options-outline',
-    });
-  }
-
-  function showTravelProfile() {
-    setFeedback({
-      title: 'Your travel impact',
-      message: booked
-        ? 'Your coach is booked. You saved an estimated 20.8 kg CO₂ and earned 50 Green Points.'
-        : 'Book the recommended coach to save an estimated 20.8 kg CO₂ and earn 50 Green Points.',
-      icon: 'person-outline',
-    });
-  }
-
-  function bookCoach() {
-    setBooked(true);
-    setFeedback({
-      title: 'Coach booked',
-      message: 'Your coach is saved and 50 Green Points will be added to your festival wristband.',
-      icon: 'checkmark-circle-outline',
-    });
-  }
+  const { selectedTravel, selectTravel } = useTrip();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -44,423 +18,191 @@ export default function TravelScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.content}
         >
-          <View style={styles.header}>
-            <View style={styles.brand}>
-              <View style={styles.brandMark}>
-                <Ionicons name="musical-notes" size={17} color={colors.surface} />
-              </View>
-              <Text style={styles.brandText}>Festival Travel</Text>
-            </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back to home"
+            onPress={() => router.navigate('/')}
+            hitSlop={8}
+            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+          >
+            <Ionicons name="chevron-back" size={17} color={palette.muted} />
+            <Text style={styles.backText}>Back</Text>
+          </Pressable>
 
-            <View style={styles.headerActions}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="View travel options"
-                onPress={showTravelOptions}
-                style={({ pressed }) => [styles.headerIconButton, pressed && styles.pressed]}
-              >
-                <Ionicons name="options-outline" size={21} color={colors.teal} />
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="View travel profile"
-                onPress={showTravelProfile}
-                style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}
-              >
-                <Ionicons name="person-outline" size={18} color={colors.surface} />
-              </Pressable>
-            </View>
+          <Text style={styles.title}>Choose your travel</Text>
+
+          <View style={styles.routeCard}>
+            <RouteRow label="From" value="Manchester" />
+            <RouteRow label="To" value="Greenfield Festival" />
+            <View style={styles.routeDivider} />
+            <Text style={styles.estimate}>Estimates are for one person.</Text>
           </View>
 
-          <View style={styles.titleRow}>
-            <View style={styles.titleBlock}>
-              <Text style={styles.pageTitle}>Select Travel</Text>
-              <View style={styles.routeRow}>
-                <Ionicons name="navigate-outline" size={16} color={colors.primary} />
-                <Text style={styles.routeText}>London Victoria</Text>
-                <Ionicons name="arrow-forward" size={14} color={colors.textMuted} />
-                <Text style={styles.destinationText}>Festival Site</Text>
-              </View>
-            </View>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Show three travel options"
-              onPress={showTravelOptions}
-              style={({ pressed }) => [styles.optionPill, pressed && styles.pressed]}
-            >
-              <Ionicons name="settings-outline" size={13} color={colors.amber} />
-              <Text style={styles.optionPillText}>3 Options</Text>
-            </Pressable>
-          </View>
-
-          <View style={styles.travelCard}>
-            <View style={styles.cardAccent} />
-
-            <View style={styles.badgeRow}>
-              <View style={styles.recommendedBadge}>
-                <Ionicons name="star" size={13} color={colors.eco} />
-                <Text style={styles.recommendedText}>Recommended · Best Option</Text>
-              </View>
-              <View style={styles.studentBadge}>
-                <Text style={styles.studentText}>STUDENT SAVER</Text>
-              </View>
-            </View>
-
-            <Image
-              source={require('../../assets/festival-travel-coach.jpg')}
-              accessibilityLabel="Festival coach arriving at the festival entrance"
-              resizeMode="cover"
-              style={styles.coachImage}
-            />
-
-            <View style={styles.coachRow}>
-              <View style={styles.coachIcon}>
-                <Ionicons name="bus-outline" size={25} color={colors.primary} />
-              </View>
-              <View style={styles.coachCopy}>
-                <Text style={styles.coachTitle}>Coach</Text>
-                <Text style={styles.coachSubtitle}>Direct Festival Express</Text>
-              </View>
-              <View style={styles.priceBlock}>
-                <Text style={styles.price}>€18</Text>
-                <Text style={styles.returnText}>return incl.</Text>
-              </View>
-            </View>
-
-            <View style={styles.metrics}>
-              <Metric icon="time-outline" label="DURATION" value="1h 45m" />
-              <View style={styles.metricDivider} />
-              <Metric icon="leaf-outline" label="FOOTPRINT" value="3.4 kg CO₂" accent />
-            </View>
-
-            <View style={styles.carbonBox}>
-              <View style={styles.carbonCopy}>
-                <Text style={styles.savingText}>⌁ 86% lower carbon than solo car</Text>
-                <Text style={styles.carText}>Car: 24.2 kg</Text>
-              </View>
-              <View style={styles.progressTrack}>
-                <View style={styles.progressFill} />
-              </View>
-            </View>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ disabled: booked }}
-              disabled={booked}
-              onPress={bookCoach}
-              style={({ pressed }) => [
-                styles.bookButton,
-                booked && styles.bookButtonDisabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.bookButtonText}>
-                {booked ? 'Coach Booked · 50 Green Pts Earned' : 'Book Coach & Earn Green Pts'}
-              </Text>
-              <Ionicons
-                name={booked ? 'checkmark-circle-outline' : 'arrow-forward'}
-                size={18}
-                color={colors.surface}
+          <View style={styles.options}>
+            {travelOptions.map((option) => (
+              <TravelCard
+                key={option.id}
+                option={option}
+                selected={selectedTravel.id === option.id}
+                onSelect={() => selectTravel(option.id)}
               />
-            </Pressable>
-          </View>
-
-          <View style={styles.perksCard}>
-            <View style={styles.perksHeader}>
-              <View style={styles.perksTitleRow}>
-                <View style={styles.perksIcon}>
-                  <Ionicons name="leaf-outline" size={18} color={colors.primary} />
-                </View>
-                <Text style={styles.perksTitle}>Festival Eco Travel Perks</Text>
-              </View>
-              <View style={styles.includedBadge}>
-                <Text style={styles.includedText}>INCLUDED</Text>
-              </View>
-            </View>
-
-            <PerkRow
-              icon="star-outline"
-              text="Instant 50 Green Points credited directly to your festival wristband"
-            />
-            <PerkRow
-              icon="flash-outline"
-              text="Priority express gate entry on arrival at Glastonbury 2025"
-            />
-            <PerkRow
-              icon="leaf-outline"
-              text="Estimated CO₂ offset: 20.8 kg compared to driving"
-              strong
-            />
+            ))}
           </View>
         </ScrollView>
-
-        <FeedbackSheet
-          visible={feedback !== null}
-          title={feedback?.title ?? ''}
-          message={feedback?.message ?? ''}
-          icon={feedback?.icon}
-          onClose={() => setFeedback(null)}
-        />
       </View>
     </SafeAreaView>
   );
 }
 
-type TravelFeedback = {
-  title: string;
-  message: string;
-  icon: keyof typeof Ionicons.glyphMap;
-};
+function RouteRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.routeRow}>
+      <Text style={styles.routeLabel}>{label}</Text>
+      <Text style={styles.routeValue}>{value}</Text>
+    </View>
+  );
+}
 
-type MetricProps = {
-  icon: keyof typeof Ionicons.glyphMap;
+function TravelCard({
+  option,
+  selected,
+  onSelect,
+}: {
+  option: TravelOption;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const price = option.price === 0 ? 'Free' : `£${option.price}`;
+  const buttonLabel = selected ? `${option.name} selected` : `Choose ${option.name.toLowerCase()}`;
+
+  return (
+    <View style={[styles.optionCard, selected && styles.optionCardSelected]}>
+      <View style={styles.optionHeader}>
+        <View style={styles.iconTile}>
+          <Ionicons name={option.icon} size={18} color={palette.ink} />
+        </View>
+        <View style={styles.optionCopy}>
+          <Text style={styles.optionName}>{option.name}</Text>
+          <Text style={styles.optionDetail}>{option.detail}</Text>
+          {option.sustainabilityNote ? (
+            <Text style={styles.sustainabilityNote}>{option.sustainabilityNote}</Text>
+          ) : null}
+        </View>
+      </View>
+
+      <View style={styles.metricsRow}>
+        <Metric label="Price" value={price} />
+        <Metric label="Time" value={option.duration} />
+        <Metric label="Convenience" value={option.convenience} />
+        <Metric label="CO₂" value={`${option.co2Kg} kg`} accent={option.co2Kg === 0} last />
+      </View>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ selected }}
+        onPress={onSelect}
+        style={({ pressed }) => [
+          styles.selectButton,
+          selected && styles.selectButtonSelected,
+          pressed && styles.pressed,
+        ]}
+      >
+        <Text style={[styles.selectButtonText, selected && styles.selectButtonTextSelected]}>
+          {buttonLabel}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function Metric({
+  label,
+  value,
+  accent = false,
+  last = false,
+}: {
   label: string;
   value: string;
   accent?: boolean;
-};
-
-function Metric({ icon, label, value, accent = false }: MetricProps) {
+  last?: boolean;
+}) {
   return (
-    <View style={styles.metric}>
-      <View style={styles.metricIcon}>
-        <Ionicons name={icon} size={16} color={colors.primary} />
-      </View>
-      <View>
-        <Text style={styles.metricLabel}>{label}</Text>
-        <Text style={[styles.metricValue, accent && styles.metricValueAccent]}>{value}</Text>
-      </View>
+    <View style={[styles.metric, !last && styles.metricBorder]}>
+      <Text style={styles.metricLabel}>{label}</Text>
+      <Text numberOfLines={1} style={[styles.metricValue, accent && styles.metricValueAccent]}>{value}</Text>
     </View>
   );
 }
 
-type PerkRowProps = {
-  icon: keyof typeof Ionicons.glyphMap;
-  text: string;
-  strong?: boolean;
+const palette = {
+  ink: '#182033',
+  muted: '#60708A',
+  line: '#E2E7EE',
+  soft: '#F5F7FA',
+  green: '#34815F',
 };
-
-function PerkRow({ icon, text, strong = false }: PerkRowProps) {
-  return (
-    <View style={styles.perkRow}>
-      <Ionicons name={icon} size={17} color={strong ? colors.eco : colors.teal} />
-      <Text style={[styles.perkText, strong && styles.perkTextStrong]}>{text}</Text>
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.background },
-  page: {
-    width: '100%',
-    maxWidth: 440,
-    flex: 1,
-    alignSelf: 'center',
-    backgroundColor: colors.background,
+  safeArea: { flex: 1, backgroundColor: colors.surface },
+  page: { width: '100%', maxWidth: 440, flex: 1, alignSelf: 'center', backgroundColor: colors.surface },
+  content: { paddingHorizontal: 18, paddingTop: 15, paddingBottom: 28 },
+  backButton: { minHeight: 27, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 3 },
+  backText: { color: '#526178', fontSize: 13 },
+  title: { marginTop: 17, color: palette.ink, fontSize: 28, lineHeight: 34, fontWeight: '800', letterSpacing: -0.7 },
+  routeCard: {
+    gap: 9,
+    marginTop: 17,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: palette.line,
+    borderRadius: 8,
+    backgroundColor: palette.soft,
   },
-  content: {
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
+  routeRow: { flexDirection: 'row', alignItems: 'center' },
+  routeLabel: { width: 50, color: palette.muted, fontSize: 11 },
+  routeValue: { color: palette.ink, fontSize: 11, fontWeight: '700' },
+  routeDivider: { height: 1, marginTop: 1, backgroundColor: palette.line },
+  estimate: { color: '#77849A', fontSize: 10 },
+  options: { gap: 11, marginTop: 15 },
+  optionCard: {
+    padding: 14,
+    borderWidth: 1,
+    borderColor: palette.line,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
   },
-  header: {
-    minHeight: 48,
+  optionCardSelected: { borderWidth: 1.5, borderColor: palette.green },
+  optionHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 11 },
+  iconTile: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 7, backgroundColor: '#F1F4F8' },
+  optionCopy: { flex: 1, paddingTop: 1 },
+  optionName: { color: palette.ink, fontSize: 14, fontWeight: '700' },
+  optionDetail: { marginTop: 4, color: '#536178', fontSize: 11, lineHeight: 15 },
+  sustainabilityNote: { marginTop: 7, color: '#20714F', fontSize: 11, lineHeight: 15 },
+  metricsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    marginTop: 13,
+    paddingVertical: 11,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#EDF0F4',
   },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  brandMark: {
-    width: 36,
-    height: 36,
+  metric: { flex: 1, minWidth: 0, paddingHorizontal: 7 },
+  metricBorder: { borderRightWidth: 1, borderRightColor: '#EDF0F4' },
+  metricLabel: { color: '#758299', fontSize: 9 },
+  metricValue: { marginTop: 4, color: palette.ink, fontSize: 11, fontWeight: '700' },
+  metricValueAccent: { color: palette.green },
+  selectButton: {
+    minHeight: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 18,
-    backgroundColor: colors.coral,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#D4DCE6',
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
   },
-  brandText: { color: colors.text, fontSize: 20, fontWeight: '800' },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  headerIconButton: {
-    width: 38,
-    height: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 19,
-    backgroundColor: colors.tealSoft,
-  },
-  profileButton: {
-    width: 38,
-    height: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 19,
-    backgroundColor: colors.primary,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  titleBlock: { flex: 1 },
-  pageTitle: { color: colors.text, fontSize: 25, fontWeight: '800' },
-  routeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 },
-  routeText: { color: colors.text, fontSize: 13 },
-  destinationText: { color: colors.primary, fontSize: 13, fontWeight: '700' },
-  optionPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: radius.round,
-    backgroundColor: colors.amberSoft,
-  },
-  optionPillText: { color: '#76520E', fontSize: 10, fontWeight: '700' },
-  travelCard: {
-    overflow: 'hidden',
-    padding: spacing.lg,
-    paddingTop: spacing.md,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-    ...cardShadow,
-  },
-  cardAccent: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 5,
-    backgroundColor: colors.coral,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  recommendedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: radius.round,
-    backgroundColor: colors.ecoSoft,
-  },
-  recommendedText: { color: colors.eco, fontSize: 10, fontWeight: '700' },
-  studentBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: radius.round,
-    backgroundColor: colors.tealSoft,
-  },
-  studentText: { color: colors.teal, fontSize: 8, fontWeight: '800' },
-  coachImage: {
-    width: '100%',
-    height: 112,
-    marginTop: spacing.md,
-    borderRadius: radius.md,
-  },
-  coachRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.md },
-  coachIcon: {
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.md,
-    backgroundColor: colors.primarySoft,
-  },
-  coachCopy: { flex: 1 },
-  coachTitle: { color: colors.text, fontSize: 21, fontWeight: '800' },
-  coachSubtitle: { marginTop: 2, color: colors.textMuted, fontSize: 12 },
-  priceBlock: { alignItems: 'flex-end' },
-  price: { color: colors.coral, fontSize: 30, fontWeight: '800' },
-  returnText: { color: colors.text, fontSize: 9 },
-  metrics: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.md,
-    padding: 10,
-    borderRadius: radius.md,
-    backgroundColor: colors.tealSoft,
-  },
-  metric: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  metricIcon: {
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 15,
-    backgroundColor: colors.surface,
-  },
-  metricDivider: { width: 1, height: 28, marginHorizontal: 6, backgroundColor: '#C9DDDF' },
-  metricLabel: { color: colors.textMuted, fontSize: 8, fontWeight: '800' },
-  metricValue: { marginTop: 1, color: colors.text, fontSize: 13, fontWeight: '800' },
-  metricValueAccent: { color: colors.eco },
-  carbonBox: {
-    marginTop: spacing.md,
-    padding: 10,
-    borderRadius: radius.sm,
-    backgroundColor: colors.primarySoft,
-  },
-  carbonCopy: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
-  savingText: { color: colors.eco, fontSize: 9, fontWeight: '700' },
-  carText: { color: colors.text, fontSize: 9 },
-  progressTrack: {
-    height: 7,
-    overflow: 'hidden',
-    marginTop: 7,
-    borderRadius: radius.round,
-    backgroundColor: '#D4E4D9',
-  },
-  progressFill: { width: '14%', height: '100%', borderRadius: radius.round, backgroundColor: colors.eco },
-  bookButton: {
-    minHeight: 49,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    borderRadius: radius.round,
-    backgroundColor: colors.primary,
-  },
-  bookButtonDisabled: { backgroundColor: '#71947E' },
-  bookButtonText: { color: colors.surface, fontSize: 14, fontWeight: '700' },
-  perksCard: {
-    gap: 10,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-    ...cardShadow,
-  },
-  perksHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    marginBottom: 2,
-  },
-  perksTitleRow: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  perksIcon: {
-    width: 34,
-    height: 34,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.sm,
-    backgroundColor: colors.amberSoft,
-  },
-  perksTitle: { flex: 1, color: colors.text, fontSize: 16, fontWeight: '800' },
-  includedBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: radius.round,
-    backgroundColor: colors.ecoSoft,
-  },
-  includedText: { color: colors.eco, fontSize: 8, fontWeight: '800' },
-  perkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  perkText: { flex: 1, color: colors.textMuted, fontSize: 11, lineHeight: 15 },
-  perkTextStrong: { color: colors.text, fontWeight: '600' },
-  pressed: { opacity: 0.78, transform: [{ scale: 0.99 }] },
+  selectButtonSelected: { borderColor: palette.green, backgroundColor: palette.green },
+  selectButtonText: { color: '#273349', fontSize: 12 },
+  selectButtonTextSelected: { color: '#FFFFFF' },
+  pressed: { opacity: 0.72 },
 });

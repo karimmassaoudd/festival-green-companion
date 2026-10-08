@@ -29,8 +29,17 @@ export type TravelOption = {
   duration: string;
   price: number;
   co2Kg: number;
-  savingPercent: number;
-  recommended?: boolean;
+  convenience: 'Low' | 'Medium' | 'High';
+  sustainabilityNote?: string;
+};
+
+export type ArrivalPoint = {
+  id: string;
+  name: string;
+  icon: IconName;
+  walkMinutes: number;
+  x: number;
+  y: number;
 };
 
 export type EcoLocationType = 'water' | 'recycling' | 'cup' | 'food';

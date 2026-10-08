@@ -1,4 +1,4 @@
-import { EcoLocation, EcoQuest, FestivalTool, TravelOption } from '@/types/models';
+import { ArrivalPoint, EcoLocation, EcoQuest, FestivalTool, TravelOption } from '@/types/models';
 
 export const festivalTools: FestivalTool[] = [
   {
@@ -43,45 +43,53 @@ export const initialQuests: EcoQuest[] = [
 export const travelOptions: TravelOption[] = [
   {
     id: 'train',
-    name: 'Train & Electric Shuttle',
-    detail: 'Direct rail + festival e-shuttle',
+    name: 'Train',
+    detail: 'Direct to the festival shuttle stop',
     icon: 'train-outline',
-    duration: '1 hr 30 min',
-    price: 24.5,
-    co2Kg: 2.1,
-    savingPercent: 91,
-    recommended: true,
+    duration: '1 hr 20',
+    price: 18,
+    co2Kg: 4,
+    convenience: 'High',
+    sustainabilityNote: 'Good travel time with much lower CO₂ than driving.',
   },
   {
     id: 'bus',
-    name: 'Official Direct Coach',
-    detail: 'Victoria coach station to festival',
+    name: 'Bus',
+    detail: 'One change in the town centre',
     icon: 'bus-outline',
-    duration: '2 hr 10 min',
-    price: 18,
-    co2Kg: 3.4,
-    savingPercent: 86,
-  },
-  {
-    id: 'carpool',
-    name: 'Festival Carpool',
-    detail: 'Estimated with 3 or more guests',
-    icon: 'people-outline',
-    duration: '2 hr',
-    price: 14,
-    co2Kg: 5.6,
-    savingPercent: 77,
+    duration: '2 hrs 05',
+    price: 8,
+    co2Kg: 7,
+    convenience: 'Medium',
   },
   {
     id: 'car',
-    name: 'Solo Car Drive',
-    detail: 'Baseline petrol car estimate',
+    name: 'Car',
+    detail: 'Parking is available near the site',
     icon: 'car-outline',
-    duration: '1 hr 45 min',
-    price: 31.2,
-    co2Kg: 24.2,
-    savingPercent: 0,
+    duration: '1 hr 05',
+    price: 32,
+    co2Kg: 35,
+    convenience: 'High',
   },
+  {
+    id: 'bike',
+    name: 'Bike',
+    detail: 'Cycle parking is available onsite',
+    icon: 'bicycle-outline',
+    duration: '2 hrs 40',
+    price: 0,
+    co2Kg: 0,
+    convenience: 'Low',
+  },
+];
+
+export const arrivalPoints: ArrivalPoint[] = [
+  { id: 'shuttle', name: 'Shuttle drop-off', icon: 'bus-outline', walkMinutes: 6, x: 15, y: 20 },
+  { id: 'bus', name: 'Bus stop', icon: 'bus-outline', walkMinutes: 4, x: 72, y: 28 },
+  { id: 'main', name: 'Main entrance', icon: 'enter-outline', walkMinutes: 2, x: 50, y: 58 },
+  { id: 'bike', name: 'Bike parking', icon: 'bicycle-outline', walkMinutes: 5, x: 15, y: 75 },
+  { id: 'car', name: 'Car park', icon: 'car-outline', walkMinutes: 8, x: 72, y: 76 },
 ];
 
 export const ecoLocations: EcoLocation[] = [

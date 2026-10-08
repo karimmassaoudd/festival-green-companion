@@ -132,3 +132,38 @@ Web  LOG  Running application "main" with appParams:
  {"hydrate": undefined, "rootTag": "#root"} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
+Web Bundled 52ms node_modules\expo-router\entry.js (1 module)
+Web  INFO  %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+Web  LOG  Running application "main" with appParams:
+ {"hydrate": undefined, "rootTag": "#root"} 
+Development-level warnings: ON.
+Performance optimizations: OFF.
+Unable to resolve "@/components/MockFestivalMap" from "src\screens\EcoMapScreen.tsx"
+[0m [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { [33mFeedbackSheet[39m } [36mfrom[39m [32m'@/components/FeedbackSheet'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m { [33mMockFestivalMap[39m } [36mfrom[39m [32m'@/components/MockFestivalMap'[39m[33m;[39m
+ [90m   |[39m                                  [31m[1m^[22m[39m
+ [90m 7 |[39m [36mimport[39m { [33mScreenScaffold[39m } [36mfrom[39m [32m'@/components/ScreenScaffold'[39m[33m;[39m
+ [90m 8 |[39m [36mimport[39m { [33mActionChip[39m[33m,[39m [33mPanel[39m[33m,[39m [33mPill[39m[33m,[39m [33mPrimaryButton[39m } [36mfrom[39m [32m'@/components/ui'[39m[33m;[39m
+ [90m 9 |[39m [36mimport[39m { ecoFilterLabels[33m,[39m ecoLocations } [36mfrom[39m [32m'@/data/mockData'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\screens\EcoMapScreen.tsx
+ | import "@/components/MockFestivalMap"
+
+ src\app\(tabs)\map.tsx
+ | import "@/screens/EcoMapScreen"
+
+ src\app (require.context)
+
+Web  ERROR  [UnableToResolveError: Unable to resolve module @/components/MockFestivalMap from C:\Users\karim\Documents\Second Year Fontys\Mobile Apps Semester 4\festival-green-companion\src\screens\EcoMapScreen.tsx: @/components/MockFestivalMap could not be found within the project or in these directories:
+  node_modules
+  ..\..\..\..\node_modules
+  4 |
+  5 | import { FeedbackSheet } from '@/components/FeedbackSheet';
+> 6 | import { MockFestivalMap } from '@/components/MockFestivalMap';
+    |                                  ^
+  7 | import { ScreenScaffold } from '@/components/ScreenScaffold';
+  8 | import { ActionChip, Panel, Pill, PrimaryButton } from '@/components/ui';
+  9 | import { ecoFilterLabels, ecoLocations } from '@/data/mockData';]
