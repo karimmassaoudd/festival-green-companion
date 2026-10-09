@@ -1,15 +1,22 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTrip } from '@/context/TripContext';
-import { travelOptions } from '@/data/mockData';
 import { TravelOption } from '@/types/models';
 import { colors } from '@/utils/theme';
 
 export default function TravelScreen() {
-  const { selectedTravel, selectTravel } = useTrip();
+  const {
+    travelOptions,
+    selectedTravel,
+    isLoading,
+    isSaving,
+    error,
+    selectTravel,
+    retry,
+  } = useTrip();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -38,16 +45,44 @@ export default function TravelScreen() {
             <Text style={styles.estimate}>Estimates are for one person.</Text>
           </View>
 
-          <View style={styles.options}>
-            {travelOptions.map((option) => (
-              <TravelCard
-                key={option.id}
-                option={option}
-                selected={selectedTravel.id === option.id}
-                onSelect={() => selectTravel(option.id)}
-              />
-            ))}
-          </View>
+          {isLoading ? (
+            <View style={styles.statusCard}>
+              <ActivityIndicator color={palette.green} />
+              <Text style={styles.statusText}>Loading travel options...</Text>
+            </View>
+          ) : (
+            <>
+              {error ? (
+                <View style={styles.errorCard}>
+                  <Ionicons name="alert-circle-outline" size={19} color="#9B3A35" />
+                  <View style={styles.errorCopy}>
+                    <Text style={styles.errorTitle}>Database connection problem</Text>
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => void retry()}
+                    style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.retryText}>Retry</Text>
+                  </Pressable>
+                </View>
+              ) : null}
+
+              <View style={styles.options}>
+                {travelOptions.map((option) => (
+                  <TravelCard
+                    key={option.id}
+                    option={option}
+                    selected={selectedTravel?.id === option.id}
+                    saving={isSaving && selectedTravel?.id === option.id}
+                    disabled={isSaving}
+                    onSelect={() => void selectTravel(option.id)}
+                  />
+                ))}
+              </View>
+            </>
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -66,14 +101,22 @@ function RouteRow({ label, value }: { label: string; value: string }) {
 function TravelCard({
   option,
   selected,
+  saving,
+  disabled,
   onSelect,
 }: {
   option: TravelOption;
   selected: boolean;
+  saving: boolean;
+  disabled: boolean;
   onSelect: () => void;
 }) {
   const price = option.price === 0 ? 'Free' : `£${option.price}`;
-  const buttonLabel = selected ? `${option.name} selected` : `Choose ${option.name.toLowerCase()}`;
+  const buttonLabel = saving
+    ? 'Saving...'
+    : selected
+      ? `${option.name} selected`
+      : `Choose ${option.name.toLowerCase()}`;
 
   return (
     <View style={[styles.optionCard, selected && styles.optionCardSelected]}>
@@ -100,10 +143,12 @@ function TravelCard({
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ selected }}
+        disabled={disabled}
         onPress={onSelect}
         style={({ pressed }) => [
           styles.selectButton,
           selected && styles.selectButtonSelected,
+          disabled && styles.selectButtonDisabled,
           pressed && styles.pressed,
         ]}
       >
@@ -164,6 +209,35 @@ const styles = StyleSheet.create({
   routeDivider: { height: 1, marginTop: 1, backgroundColor: palette.line },
   estimate: { color: '#77849A', fontSize: 10 },
   options: { gap: 11, marginTop: 15 },
+  statusCard: {
+    minHeight: 90,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 15,
+    borderWidth: 1,
+    borderColor: palette.line,
+    borderRadius: 8,
+    backgroundColor: palette.soft,
+  },
+  statusText: { color: palette.muted, fontSize: 12 },
+  errorCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 9,
+    marginTop: 15,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E8C5C2',
+    borderRadius: 8,
+    backgroundColor: '#FFF6F5',
+  },
+  errorCopy: { flex: 1 },
+  errorTitle: { color: '#7D2F2A', fontSize: 11, fontWeight: '700' },
+  errorText: { marginTop: 3, color: '#8C4D48', fontSize: 9.5, lineHeight: 14 },
+  retryButton: { paddingHorizontal: 9, paddingVertical: 6, borderRadius: 5, backgroundColor: '#FFFFFF' },
+  retryText: { color: '#7D2F2A', fontSize: 10, fontWeight: '700' },
   optionCard: {
     padding: 14,
     borderWidth: 1,
@@ -202,6 +276,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   selectButtonSelected: { borderColor: palette.green, backgroundColor: palette.green },
+  selectButtonDisabled: { opacity: 0.72 },
   selectButtonText: { color: '#273349', fontSize: 12 },
   selectButtonTextSelected: { color: '#FFFFFF' },
   pressed: { opacity: 0.72 },

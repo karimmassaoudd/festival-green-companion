@@ -1,4 +1,4 @@
-import { ArrivalPoint, EcoLocation, EcoQuest, FestivalTool, TravelOption } from '@/types/models';
+import { ArrivalPoint, EcoLocation, EcoQuest, FestivalTool } from '@/types/models';
 
 export const festivalTools: FestivalTool[] = [
   {
@@ -38,50 +38,6 @@ export const initialQuests: EcoQuest[] = [
   { id: 'refill', label: 'Refill 750 ml bottle 3 times', points: 15, completed: true },
   { id: 'compost', label: 'Sort compostable packaging', points: 15, completed: true },
   { id: 'meal', label: 'Eat one certified plant-based meal', points: 20, completed: false },
-];
-
-export const travelOptions: TravelOption[] = [
-  {
-    id: 'train',
-    name: 'Train',
-    detail: 'Direct to the festival shuttle stop',
-    icon: 'train-outline',
-    duration: '1 hr 20',
-    price: 18,
-    co2Kg: 4,
-    convenience: 'High',
-    sustainabilityNote: 'Good travel time with much lower CO₂ than driving.',
-  },
-  {
-    id: 'bus',
-    name: 'Bus',
-    detail: 'One change in the town centre',
-    icon: 'bus-outline',
-    duration: '2 hrs 05',
-    price: 8,
-    co2Kg: 7,
-    convenience: 'Medium',
-  },
-  {
-    id: 'car',
-    name: 'Car',
-    detail: 'Parking is available near the site',
-    icon: 'car-outline',
-    duration: '1 hr 05',
-    price: 32,
-    co2Kg: 35,
-    convenience: 'High',
-  },
-  {
-    id: 'bike',
-    name: 'Bike',
-    detail: 'Cycle parking is available onsite',
-    icon: 'bicycle-outline',
-    duration: '2 hrs 40',
-    price: 0,
-    co2Kg: 0,
-    convenience: 'Low',
-  },
 ];
 
 export const arrivalPoints: ArrivalPoint[] = [

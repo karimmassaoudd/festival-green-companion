@@ -1,14 +1,18 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTrip } from '@/context/TripContext';
 import { colors } from '@/utils/theme';
 
 export default function HomeScreen() {
-  const { selectedTravel } = useTrip();
-  const price = selectedTravel.price === 0 ? 'Free' : `£${selectedTravel.price}`;
+  const { selectedTravel, isLoading, error, retry } = useTrip();
+  const price = selectedTravel
+    ? selectedTravel.price === 0
+      ? 'Free'
+      : `£${selectedTravel.price}`
+    : '';
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -54,24 +58,49 @@ export default function HomeScreen() {
           <View style={styles.choiceSection}>
             <Text style={styles.choiceLabel}>Your choice</Text>
             <View style={styles.choiceCard}>
-              <View style={styles.iconTile}>
-                <Ionicons name={selectedTravel.icon} size={18} color={stylesVars.ink} />
-              </View>
-              <View style={styles.choiceCopy}>
-                <Text style={styles.choiceTitle}>{selectedTravel.name} selected</Text>
-                <Text style={styles.choiceMeta}>
-                  {price} · {selectedTravel.duration} · {selectedTravel.co2Kg} kg CO₂
-                </Text>
-              </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Change travel choice"
-                onPress={() => router.push('/travel')}
-                hitSlop={10}
-                style={({ pressed }) => pressed && styles.changePressed}
-              >
-                <Text style={styles.changeText}>Change</Text>
-              </Pressable>
+              {isLoading ? (
+                <>
+                  <ActivityIndicator color={stylesVars.green} />
+                  <Text style={styles.loadingText}>Loading your saved choice...</Text>
+                </>
+              ) : selectedTravel ? (
+                <>
+                  <View style={styles.iconTile}>
+                    <Ionicons name={selectedTravel.icon} size={18} color={stylesVars.ink} />
+                  </View>
+                  <View style={styles.choiceCopy}>
+                    <Text style={styles.choiceTitle}>{selectedTravel.name} selected</Text>
+                    <Text style={styles.choiceMeta}>
+                      {price} · {selectedTravel.duration} · {selectedTravel.co2Kg} kg CO₂
+                    </Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Change travel choice"
+                    onPress={() => router.push('/travel')}
+                    hitSlop={10}
+                    style={({ pressed }) => pressed && styles.changePressed}
+                  >
+                    <Text style={styles.changeText}>Change</Text>
+                  </Pressable>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="alert-circle-outline" size={20} color="#9B3A35" />
+                  <View style={styles.choiceCopy}>
+                    <Text style={styles.errorTitle}>Could not load your choice</Text>
+                    <Text numberOfLines={2} style={styles.errorText}>{error}</Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => void retry()}
+                    hitSlop={10}
+                    style={({ pressed }) => pressed && styles.changePressed}
+                  >
+                    <Text style={styles.changeText}>Retry</Text>
+                  </Pressable>
+                </>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -160,8 +189,11 @@ const styles = StyleSheet.create({
   },
   iconTile: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 7, backgroundColor: '#F1F4F8' },
   choiceCopy: { flex: 1 },
+  loadingText: { color: stylesVars.muted, fontSize: 11 },
   choiceTitle: { color: stylesVars.ink, fontSize: 13, fontWeight: '700' },
   choiceMeta: { marginTop: 4, color: stylesVars.muted, fontSize: 10.5 },
+  errorTitle: { color: '#7D2F2A', fontSize: 11, fontWeight: '700' },
+  errorText: { marginTop: 3, color: '#8C4D48', fontSize: 9, lineHeight: 13 },
   changeText: { color: stylesVars.green, fontSize: 12, fontWeight: '500' },
   pressed: { opacity: 0.82 },
   changePressed: { opacity: 0.55 },

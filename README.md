@@ -45,25 +45,19 @@ The project aims to make festival travel clearer and more sustainable by allowin
 - Provides Home, Travel, and Map bottom tabs.
 - Includes accessible labels and selected states for interactive controls.
 
-## Database plan
+## Database integration
 
-The current version uses mock data and in-memory React state while the interface and user flows are being developed. A database is not connected yet.
+The project uses Supabase for the first complete database flow:
 
-All information that must be saved or shared will be stored in a database in a future development phase. Local component state will only be used for temporary interface state.
+```text
+App → Supabase client → PostgreSQL database → App
+```
 
-Planned database-backed data includes:
+Supabase stores festivals, travel options, arrival points, and each user's selected travel option. The app automatically creates an anonymous Supabase user, so a saved choice belongs to one user without requiring a login screen. The session is stored on the device and restored when the app starts again.
 
-- User accounts and profiles.
-- Festival information and dates.
-- Journey origins and destinations.
-- Available travel options and live travel details.
-- User travel selections.
-- Arrival points and walking-time information.
-- Sustainability data and CO₂ calculations.
-- Saved preferences and application settings.
-- Any other information that needs to remain available after the app is closed.
+Row Level Security ensures users can only read and update their own travel choice. The application uses a public publishable key and never contains a secret or service-role key.
 
-The database provider and schema will be selected and documented when the backend phase begins. Sensitive data and credentials must never be committed to the repository. Environment variables will be used for database URLs, API keys, and other secrets.
+See [supabase/README.md](./supabase/README.md) for setup instructions and [supabase/schema.sql](./supabase/schema.sql) for the complete schema, seed data, relationships, permissions, and RLS policies.
 
 ## Technology stack
 
@@ -87,11 +81,14 @@ festival-green-companion/
 │   │   └── _layout.tsx      Root application layout
 │   ├── components/          Reusable interface components
 │   ├── context/             Shared React state
-│   ├── data/                Temporary mock data
+│   ├── data/                Mock data for features not yet connected to Supabase
+│   ├── lib/                 Supabase client configuration
 │   ├── navigation/          Bottom-tab configuration
 │   ├── screens/             Screen implementations
+│   ├── services/            Database queries and data mapping
 │   ├── types/               TypeScript models
 │   └── utils/               Theme and formatting helpers
+├── supabase/                SQL schema and database setup guide
 ├── app.json                 Expo application configuration
 ├── package.json             Dependencies and scripts
 └── tsconfig.json            TypeScript configuration
@@ -108,6 +105,7 @@ Install the following before running the project:
 - Android Studio for Android development
 - Android SDK Platform 36 or newer
 - An Android emulator or a physical Android device with USB debugging enabled
+- A Supabase project
 
 For iOS development, macOS and Xcode are required for local simulator builds.
 
@@ -197,20 +195,20 @@ npm run typecheck
 
 ## Current data behavior
 
-- Travel and arrival-point data currently comes from `src/data/mockData.ts`.
-- The selected travel method is stored in `TripContext` while the application is running.
-- The selected map location is temporary screen state.
-- Current selections reset when the application reloads.
-- Persistent storage will be implemented through the planned database integration.
+- Travel options are loaded from the Supabase `travel_options` table.
+- The selected travel method is saved in `user_travel_choices`.
+- The saved choice is loaded when the app starts.
+- The Supabase anonymous user session persists locally through Expo SQLite storage.
+- Festival and arrival-point tables are created and seeded by the SQL schema.
+- The current map UI still uses local arrival-point data; the simple working database flow intentionally focuses on travel choices.
+- Temporary visual state remains in React components.
 
 ## Future development
 
-- Design and implement the database schema.
-- Connect the application to a backend API or database service.
 - Add authentication and user profiles.
-- Replace mock travel information with database or live API data.
-- Persist travel choices and user preferences.
-- Add real festival map and location data.
+- Load the existing map UI from the Supabase `arrival_points` table.
+- Replace static festival details with the `festivals` table data.
+- Add live travel data from an external API when required.
 - Add loading, empty, offline, and error states.
 - Add automated component and end-to-end tests.
 - Add secure environment configuration for development and production.
