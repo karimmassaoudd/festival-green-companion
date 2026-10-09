@@ -53,9 +53,9 @@ The project uses Supabase for the first complete database flow:
 App → Supabase client → PostgreSQL database → App
 ```
 
-Supabase stores festivals, travel options, arrival points, and each user's selected travel option. The app automatically creates an anonymous Supabase user, so a saved choice belongs to one user without requiring a login screen. The session is stored on the device and restored when the app starts again.
+Supabase stores festivals, travel options, arrival points, registered accounts, and each account's selected travel option. The app provides separate Login and Sign Up screens. A Supabase session is stored on the device and restored when the app starts again.
 
-Row Level Security ensures users can only read and update their own travel choice. The application uses a public publishable key and never contains a secret or service-role key.
+Supabase Auth stores account email addresses, securely hashed passwords, account IDs, and the name supplied during sign-up. Row Level Security ensures users can only read and update their own travel choice. The application uses a public publishable key and never contains a secret or service-role key.
 
 See [supabase/README.md](./supabase/README.md) for setup instructions and [supabase/schema.sql](./supabase/schema.sql) for the complete schema, seed data, relationships, permissions, and RLS policies.
 
@@ -196,16 +196,17 @@ npm run typecheck
 ## Current data behavior
 
 - Travel options are loaded from the Supabase `travel_options` table.
-- The selected travel method is saved in `user_travel_choices`.
-- The saved choice is loaded when the app starts.
-- The Supabase anonymous user session persists locally through Expo SQLite storage.
+- Users create an account or log in with email and password through Supabase Auth.
+- The selected travel method is saved in `user_travel_choices` with the logged-in account ID.
+- The saved choice is loaded after the user's session is restored.
+- The Supabase login session persists locally through Expo SQLite storage.
 - Festival and arrival-point tables are created and seeded by the SQL schema.
 - The current map UI still uses local arrival-point data; the simple working database flow intentionally focuses on travel choices.
 - Temporary visual state remains in React components.
 
 ## Future development
 
-- Add authentication and user profiles.
+- Add optional profile details beyond the name already stored in Supabase Auth metadata.
 - Load the existing map UI from the Supabase `arrival_points` table.
 - Replace static festival details with the `festivals` table data.
 - Add live travel data from an external API when required.

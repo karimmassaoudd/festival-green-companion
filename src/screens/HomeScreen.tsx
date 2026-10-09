@@ -3,10 +3,12 @@ import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/context/AuthContext';
 import { useTrip } from '@/context/TripContext';
 import { colors } from '@/utils/theme';
 
 export default function HomeScreen() {
+  const { user, signOut } = useAuth();
   const { selectedTravel, isLoading, error, retry } = useTrip();
   const price = selectedTravel
     ? selectedTravel.price === 0
@@ -26,7 +28,18 @@ export default function HomeScreen() {
               <Text style={styles.festivalName}>Greenfield Festival</Text>
               <Text style={styles.festivalMeta}>Travel planner</Text>
             </View>
-            <Text style={styles.date}>16–18 Aug</Text>
+            <View style={styles.accountBlock}>
+              <Text style={styles.date}>16–18 Aug</Text>
+              <Text numberOfLines={1} style={styles.accountEmail}>{user?.email}</Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => void signOut()}
+                hitSlop={8}
+                style={({ pressed }) => pressed && styles.changePressed}
+              >
+                <Text style={styles.signOutText}>Sign out</Text>
+              </Pressable>
+            </View>
           </View>
 
           <View style={styles.intro}>
@@ -142,6 +155,9 @@ const styles = StyleSheet.create({
   festivalName: { color: stylesVars.ink, fontSize: 16, fontWeight: '700' },
   festivalMeta: { marginTop: 5, color: stylesVars.muted, fontSize: 11 },
   date: { color: '#344157', fontSize: 12 },
+  accountBlock: { maxWidth: 165, alignItems: 'flex-end' },
+  accountEmail: { maxWidth: 165, marginTop: 4, color: stylesVars.muted, fontSize: 9 },
+  signOutText: { marginTop: 4, color: stylesVars.green, fontSize: 10, fontWeight: '700' },
   intro: { paddingHorizontal: 18, paddingTop: 23 },
   eyebrow: { color: stylesVars.green, fontSize: 12, fontWeight: '700' },
   title: { marginTop: 7, color: stylesVars.ink, fontSize: 28, lineHeight: 31, fontWeight: '800', letterSpacing: -0.7 },

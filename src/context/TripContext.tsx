@@ -1,5 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { useAuth } from '@/context/AuthContext';
 import { loadFestivalTravelData, saveTravelChoice } from '@/services/travelService';
 import { TravelOption } from '@/types/models';
 
@@ -16,6 +17,7 @@ type TripContextValue = {
 const TripContext = createContext<TripContextValue | null>(null);
 
 export function TripProvider({ children }: PropsWithChildren) {
+  const { user } = useAuth();
   const [travelOptions, setTravelOptions] = useState<TravelOption[]>([]);
   const [selectedTravel, setSelectedTravel] = useState<TravelOption | null>(null);
   const [festivalId, setFestivalId] = useState<string | null>(null);
@@ -29,16 +31,27 @@ export function TripProvider({ children }: PropsWithChildren) {
     setError(null);
 
     try {
-      const data = await loadFestivalTravelData();
+      if (!user) throw new Error('Log in to load your saved travel choice.');
+
+      const data = await loadFestivalTravelData(user.id);
       const savedOption = data.travelOptions.find(
         (option) => option.id === data.savedTravelOptionId,
       );
       const defaultOption = data.travelOptions.find((option) => option.name === 'Bike');
+      const selectedOption = savedOption ?? defaultOption ?? data.travelOptions[0];
+
+      if (!data.savedTravelOptionId && selectedOption) {
+        await saveTravelChoice({
+          festivalId: data.festivalId,
+          userId: user.id,
+          travelOptionId: selectedOption.id,
+        });
+      }
 
       setTravelOptions(data.travelOptions);
       setFestivalId(data.festivalId);
-      setUserId(data.userId);
-      setSelectedTravel(savedOption ?? defaultOption ?? data.travelOptions[0]);
+      setUserId(user.id);
+      setSelectedTravel(selectedOption);
     } catch (loadError) {
       setTravelOptions([]);
       setSelectedTravel(null);
@@ -48,7 +61,7 @@ export function TripProvider({ children }: PropsWithChildren) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const startupTimer = setTimeout(() => void loadData(), 0);

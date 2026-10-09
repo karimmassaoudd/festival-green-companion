@@ -5,9 +5,11 @@
 1. Create a Supabase project.
 2. Open **SQL Editor** in the Supabase dashboard.
 3. Copy all SQL from `schema.sql` and run it once.
-4. Open **Authentication > Providers > Anonymous Sign-Ins** and enable anonymous sign-ins.
+4. Open **Authentication > Sign In / Providers** and make sure **Email** sign-in is enabled.
 
-Anonymous sign-in gives each app installation a real Supabase user ID without adding a login screen. Row Level Security uses that ID so a user can only access their own saved travel choice.
+The app has separate Login and Sign Up screens. Supabase Auth stores the email, securely hashed password, account ID, and the name supplied during sign-up. Row Level Security uses the account ID so a user can only access their own saved travel choice.
+
+If **Confirm email** is enabled, a new user must open the confirmation email before logging in. Anonymous sign-in is no longer required and can be disabled.
 
 ## 2. Configure the Expo app
 
@@ -32,15 +34,16 @@ npx expo start --clear
 
 - One `festival` has many `travel_options`.
 - One `festival` has many `arrival_points`.
-- One authenticated user can save one `user_travel_choice` per festival.
+- One registered user can save one `user_travel_choice` per festival.
 - Each `user_travel_choice` belongs to one festival and one travel option from that same festival.
 - Deleting a festival removes its options, arrival points, and saved choices.
-- Deleting an anonymous Supabase user removes that user's saved choices.
+- Deleting a Supabase Auth user removes that user's saved choices.
 
 ## Security
 
 - Festival, travel-option, and arrival-point records are read-only from the app.
 - `user_travel_choices` requires an authenticated session.
 - RLS policies compare `auth.uid()` with `user_id` for every choice read or write.
+- Emails and password hashes stay in Supabase's protected `auth.users` table; passwords are never stored in public application tables.
 - The publishable key identifies the Supabase project but does not bypass RLS.
 - Secret and service-role keys are never used by the mobile client.

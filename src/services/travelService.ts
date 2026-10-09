@@ -25,33 +25,12 @@ type SavedChoiceRow = {
 
 export type FestivalTravelData = {
   festivalId: string;
-  userId: string;
   travelOptions: TravelOption[];
   savedTravelOptionId: string | null;
 };
 
-async function getOrCreateAnonymousUserId() {
+export async function loadFestivalTravelData(userId: string): Promise<FestivalTravelData> {
   const client = getSupabaseClient();
-  const { data: sessionData, error: sessionError } = await client.auth.getSession();
-
-  if (sessionError) throw new Error(`Could not restore the Supabase session: ${sessionError.message}`);
-  if (sessionData.session?.user.id) return sessionData.session.user.id;
-
-  const { data, error } = await client.auth.signInAnonymously();
-  if (error || !data.user) {
-    throw new Error(
-      error
-        ? `Could not create an anonymous Supabase user: ${error.message}`
-        : 'Could not create an anonymous Supabase user.',
-    );
-  }
-
-  return data.user.id;
-}
-
-export async function loadFestivalTravelData(): Promise<FestivalTravelData> {
-  const client = getSupabaseClient();
-  const userId = await getOrCreateAnonymousUserId();
 
   const { data: festivalData, error: festivalError } = await client
     .from('festivals')
@@ -84,7 +63,6 @@ export async function loadFestivalTravelData(): Promise<FestivalTravelData> {
 
   return {
     festivalId: festivalData.id,
-    userId,
     travelOptions: optionData.map(mapTravelOption),
     savedTravelOptionId: choiceData?.travel_option_id ?? null,
   };
