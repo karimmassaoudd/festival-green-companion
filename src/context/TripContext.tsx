@@ -1,16 +1,20 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useAuth } from '@/context/AuthContext';
+import { loadUserTravelBookings } from '@/services/bookingService';
 import { loadFestivalTravelData, saveTravelChoice } from '@/services/travelService';
 import { TravelOption } from '@/types/models';
 
 type TripContextValue = {
   travelOptions: TravelOption[];
   selectedTravel: TravelOption | null;
+  festivalId: string | null;
+  bookingByTravelOptionId: Record<string, string>;
   isLoading: boolean;
   isSaving: boolean;
   error: string | null;
-  selectTravel: (id: string) => Promise<void>;
+  selectTravel: (id: string) => Promise<boolean>;
+  rememberBooking: (travelOptionId: string, bookingId: string) => void;
   retry: () => Promise<void>;
 };
 
@@ -21,6 +25,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   const [travelOptions, setTravelOptions] = useState<TravelOption[]>([]);
   const [selectedTravel, setSelectedTravel] = useState<TravelOption | null>(null);
   const [festivalId, setFestivalId] = useState<string | null>(null);
+  const [bookingByTravelOptionId, setBookingByTravelOptionId] = useState<Record<string, string>>({});
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,10 +35,19 @@ export function TripProvider({ children }: PropsWithChildren) {
     setIsLoading(true);
     setError(null);
 
-    try {
-      if (!user) throw new Error('Log in to load your saved travel choice.');
+    if (!user) {
+      setTravelOptions([]);
+      setSelectedTravel(null);
+      setFestivalId(null);
+      setBookingByTravelOptionId({});
+      setUserId(null);
+      setIsLoading(false);
+      return;
+    }
 
+    try {
       const data = await loadFestivalTravelData(user.id);
+      const bookings = await loadUserTravelBookings(user.id, data.festivalId);
       const savedOption = data.travelOptions.find(
         (option) => option.id === data.savedTravelOptionId,
       );
@@ -50,12 +64,14 @@ export function TripProvider({ children }: PropsWithChildren) {
 
       setTravelOptions(data.travelOptions);
       setFestivalId(data.festivalId);
+      setBookingByTravelOptionId(bookings);
       setUserId(user.id);
       setSelectedTravel(selectedOption);
     } catch (loadError) {
       setTravelOptions([]);
       setSelectedTravel(null);
       setFestivalId(null);
+      setBookingByTravelOptionId({});
       setUserId(null);
       setError(getErrorMessage(loadError));
     } finally {
@@ -70,7 +86,7 @@ export function TripProvider({ children }: PropsWithChildren) {
 
   const selectTravel = useCallback(async (id: string) => {
     const nextOption = travelOptions.find((option) => option.id === id);
-    if (!nextOption || !festivalId || !userId || isSaving) return;
+    if (!nextOption || !festivalId || !userId || isSaving) return false;
 
     const previousOption = selectedTravel;
     setSelectedTravel(nextOption);
@@ -79,25 +95,45 @@ export function TripProvider({ children }: PropsWithChildren) {
 
     try {
       await saveTravelChoice({ festivalId, userId, travelOptionId: id });
+      return true;
     } catch (saveError) {
       setSelectedTravel(previousOption);
       setError(getErrorMessage(saveError));
+      return false;
     } finally {
       setIsSaving(false);
     }
   }, [festivalId, isSaving, selectedTravel, travelOptions, userId]);
 
+  const rememberBooking = useCallback((travelOptionId: string, bookingId: string) => {
+    setBookingByTravelOptionId((current) => ({ ...current, [travelOptionId]: bookingId }));
+  }, []);
+
   const value = useMemo(
     () => ({
       travelOptions,
       selectedTravel,
+      festivalId,
+      bookingByTravelOptionId,
       isLoading,
       isSaving,
       error,
       selectTravel,
+      rememberBooking,
       retry: loadData,
     }),
-    [error, isLoading, isSaving, loadData, selectTravel, selectedTravel, travelOptions],
+    [
+      bookingByTravelOptionId,
+      error,
+      festivalId,
+      isLoading,
+      isSaving,
+      loadData,
+      rememberBooking,
+      selectTravel,
+      selectedTravel,
+      travelOptions,
+    ],
   );
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;

@@ -62,6 +62,24 @@ create table if not exists public.user_travel_choices (
     on delete cascade
 );
 
+create table if not exists public.travel_bookings (
+  id uuid primary key default gen_random_uuid(),
+  booking_reference text not null unique
+    default ('GF-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8))),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  festival_id uuid not null references public.festivals(id) on delete cascade,
+  travel_option_id uuid not null,
+  price_gbp numeric(8, 2) not null check (price_gbp >= 0),
+  status text not null default 'confirmed' check (status in ('confirmed', 'cancelled')),
+  booked_at timestamptz not null default now(),
+  constraint travel_bookings_user_festival_option_key
+    unique (user_id, festival_id, travel_option_id),
+  constraint travel_bookings_option_fkey
+    foreign key (festival_id, travel_option_id)
+    references public.travel_options(festival_id, id)
+    on delete cascade
+);
+
 create index if not exists travel_options_festival_id_idx
   on public.travel_options(festival_id);
 
@@ -70,6 +88,9 @@ create index if not exists arrival_points_festival_id_idx
 
 create index if not exists user_travel_choices_user_id_idx
   on public.user_travel_choices(user_id);
+
+create index if not exists travel_bookings_user_id_idx
+  on public.travel_bookings(user_id);
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -92,16 +113,19 @@ alter table public.festivals enable row level security;
 alter table public.travel_options enable row level security;
 alter table public.arrival_points enable row level security;
 alter table public.user_travel_choices enable row level security;
+alter table public.travel_bookings enable row level security;
 
 revoke all on table public.festivals from anon, authenticated;
 revoke all on table public.travel_options from anon, authenticated;
 revoke all on table public.arrival_points from anon, authenticated;
 revoke all on table public.user_travel_choices from anon, authenticated;
+revoke all on table public.travel_bookings from anon, authenticated;
 
 grant select on table public.festivals to anon, authenticated;
 grant select on table public.travel_options to anon, authenticated;
 grant select on table public.arrival_points to anon, authenticated;
 grant select, insert, update on table public.user_travel_choices to authenticated;
+grant select, insert on table public.travel_bookings to authenticated;
 
 drop policy if exists "Festival catalog is readable" on public.festivals;
 create policy "Festival catalog is readable"
@@ -138,6 +162,18 @@ create policy "Users can update their own travel choice"
 on public.user_travel_choices for update
 to authenticated
 using ((select auth.uid()) is not null and (select auth.uid()) = user_id)
+with check ((select auth.uid()) is not null and (select auth.uid()) = user_id);
+
+drop policy if exists "Users can read their own travel bookings" on public.travel_bookings;
+create policy "Users can read their own travel bookings"
+on public.travel_bookings for select
+to authenticated
+using ((select auth.uid()) is not null and (select auth.uid()) = user_id);
+
+drop policy if exists "Users can create their own travel bookings" on public.travel_bookings;
+create policy "Users can create their own travel bookings"
+on public.travel_bookings for insert
+to authenticated
 with check ((select auth.uid()) is not null and (select auth.uid()) = user_id);
 
 -- Seed the festival shown by the current design.

@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
+import type { Href } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,6 +12,7 @@ export default function TravelScreen() {
   const {
     travelOptions,
     selectedTravel,
+    bookingByTravelOptionId,
     isLoading,
     isSaving,
     error,
@@ -77,7 +79,17 @@ export default function TravelScreen() {
                     selected={selectedTravel?.id === option.id}
                     saving={isSaving && selectedTravel?.id === option.id}
                     disabled={isSaving}
-                    onSelect={() => void selectTravel(option.id)}
+                    bookingId={bookingByTravelOptionId[option.id]}
+                    onSelect={() => {
+                      const bookingId = bookingByTravelOptionId[option.id];
+                      if (option.name === 'Train') {
+                        router.push(
+                          (bookingId ? `/booking/${bookingId}` : '/booking/review') as Href,
+                        );
+                        return;
+                      }
+                      void selectTravel(option.id);
+                    }}
                   />
                 ))}
               </View>
@@ -103,20 +115,24 @@ function TravelCard({
   selected,
   saving,
   disabled,
+  bookingId,
   onSelect,
 }: {
   option: TravelOption;
   selected: boolean;
   saving: boolean;
   disabled: boolean;
+  bookingId?: string;
   onSelect: () => void;
 }) {
   const price = option.price === 0 ? 'Free' : `£${option.price}`;
-  const buttonLabel = saving
-    ? 'Saving...'
-    : selected
-      ? `${option.name} selected`
-      : `Choose ${option.name.toLowerCase()}`;
+  const buttonLabel = bookingId
+    ? 'View booking proof'
+    : saving
+      ? 'Saving...'
+      : selected
+        ? `${option.name} selected`
+        : `Choose ${option.name.toLowerCase()}`;
 
   return (
     <View style={[styles.optionCard, selected && styles.optionCardSelected]}>
@@ -142,17 +158,22 @@ function TravelCard({
 
       <Pressable
         accessibilityRole="button"
-        accessibilityState={{ selected }}
+        accessibilityState={{ selected: selected || Boolean(bookingId) }}
         disabled={disabled}
         onPress={onSelect}
         style={({ pressed }) => [
           styles.selectButton,
-          selected && styles.selectButtonSelected,
+          (selected || Boolean(bookingId)) && styles.selectButtonSelected,
           disabled && styles.selectButtonDisabled,
           pressed && styles.pressed,
         ]}
       >
-        <Text style={[styles.selectButtonText, selected && styles.selectButtonTextSelected]}>
+        <Text
+          style={[
+            styles.selectButtonText,
+            (selected || Boolean(bookingId)) && styles.selectButtonTextSelected,
+          ]}
+        >
           {buttonLabel}
         </Text>
       </Pressable>

@@ -3,13 +3,16 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { TripProvider } from '@/context/TripContext';
 import { colors } from '@/utils/theme';
 
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootNavigator />
-      <StatusBar style="dark" />
+      <TripProvider>
+        <RootNavigator />
+        <StatusBar style="dark" />
+      </TripProvider>
     </AuthProvider>
   );
 }
@@ -30,6 +33,8 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={Boolean(session)}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="booking/review" />
+        <Stack.Screen name="booking/[bookingId]" />
       </Stack.Protected>
       <Stack.Protected guard={!session}>
         <Stack.Screen name="login" />
