@@ -41,11 +41,11 @@ export const initialQuests: EcoQuest[] = [
 ];
 
 export const arrivalPoints: ArrivalPoint[] = [
-  { id: 'shuttle', name: 'Shuttle drop-off', icon: 'bus-outline', walkMinutes: 6, x: 15, y: 20 },
-  { id: 'bus', name: 'Bus stop', icon: 'bus-outline', walkMinutes: 4, x: 72, y: 28 },
-  { id: 'main', name: 'Main entrance', icon: 'enter-outline', walkMinutes: 2, x: 50, y: 58 },
-  { id: 'bike', name: 'Bike parking', icon: 'bicycle-outline', walkMinutes: 5, x: 15, y: 75 },
-  { id: 'car', name: 'Car park', icon: 'car-outline', walkMinutes: 8, x: 72, y: 76 },
+  { id: 'shuttle', name: 'Shuttle drop-off', icon: 'bus-outline', walkMinutes: 6, peopleCount: 42, x: 15, y: 20 },
+  { id: 'bus', name: 'Bus stop', icon: 'bus-outline', walkMinutes: 4, peopleCount: 28, x: 72, y: 28 },
+  { id: 'main', name: 'Main entrance', icon: 'enter-outline', walkMinutes: 2, peopleCount: 116, x: 50, y: 58 },
+  { id: 'bike', name: 'Bike parking', icon: 'bicycle-outline', walkMinutes: 5, peopleCount: 19, x: 15, y: 75 },
+  { id: 'car', name: 'Car park', icon: 'car-outline', walkMinutes: 8, peopleCount: 63, x: 72, y: 76 },
 ];
 
 export const ecoLocations: EcoLocation[] = [

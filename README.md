@@ -14,6 +14,8 @@ The project aims to make festival travel clearer and more sustainable by allowin
 - View available festival arrival points on an interactive map.
 - Check the estimated walking time from each arrival point to the main arena.
 - Keep the experience simple, accessible, and suitable for mobile devices.
+- Read festival background information and view an original photo gallery.
+- Switch between persistent light and dark themes.
 
 ## Current features
 
@@ -24,6 +26,7 @@ The project aims to make festival travel clearer and more sustainable by allowin
 - Links to the travel comparison page.
 - Shows the currently selected travel method.
 - Allows the user to change their selection.
+- Links to the festival story/gallery and privacy policy.
 
 ### Travel page
 
@@ -38,6 +41,21 @@ The project aims to make festival travel clearer and more sustainable by allowin
 - Provides interactive pins for the shuttle drop-off, bus stop, main entrance, bicycle parking, and car park.
 - Updates the selected-location card when a pin is pressed.
 - Shows the estimated walking time to the main arena.
+- Shows a people symbol and clearly labelled demo crowd estimate at every arrival point.
+
+### Festival page
+
+- Introduces the fictional Greenfield Festival and its sustainability goals.
+- Includes original, locally bundled photorealistic festival images.
+- Works without loading images from third-party websites.
+
+### Account, appearance, and privacy
+
+- Provides Supabase email/password sign-up and login screens.
+- Restores the signed-in session when the app starts.
+- Includes a top notification bar on the main screens.
+- Supports persistent light and dark modes.
+- Includes a plain-language privacy policy that explains current data storage.
 
 ### Navigation
 
@@ -53,9 +71,11 @@ The project uses Supabase for the first complete database flow:
 App → Supabase client → PostgreSQL database → App
 ```
 
-Supabase stores festivals, travel options, arrival points, registered accounts, and each account's selected travel option. The app provides separate Login and Sign Up screens. A Supabase session is stored on the device and restored when the app starts again.
+Supabase stores festivals, travel options, arrival points, registered accounts, each account's selected travel option, and confirmed in-app travel bookings. The app provides separate Login and Sign Up screens. A Supabase session is stored on the device and restored when the app starts again.
 
-Supabase Auth stores account email addresses, securely hashed passwords, account IDs, and the name supplied during sign-up. Row Level Security ensures users can only read and update their own travel choice. The application uses a public publishable key and never contains a secret or service-role key.
+Supabase Auth stores account email addresses, securely hashed passwords, account IDs, and the name supplied during sign-up. Row Level Security ensures users can only access their own travel choice and booking records. The application uses a public publishable key and never contains a secret or service-role key.
+
+The Train option demonstrates the complete booking flow: review the journey, confirm it, save a `travel_bookings` record, and reload that record as booking proof. The proof is an in-app reservation for this portfolio project; it is not a rail-operator ticket and does not process payment.
 
 See [supabase/README.md](./supabase/README.md) for setup instructions and [supabase/schema.sql](./supabase/schema.sql) for the complete schema, seed data, relationships, permissions, and RLS policies.
 
@@ -199,9 +219,15 @@ npm run typecheck
 - Users create an account or log in with email and password through Supabase Auth.
 - The selected travel method is saved in `user_travel_choices` with the logged-in account ID.
 - The saved choice is loaded after the user's session is restored.
+- Confirming Train creates one `travel_bookings` record for that user, festival, and travel option.
+- The proof screen reloads the booking reference, status, price, and booking time from Supabase.
+- Returning to the Train option shows **View booking proof** when a confirmed booking already exists.
 - The Supabase login session persists locally through Expo SQLite storage.
 - Festival and arrival-point tables are created and seeded by the SQL schema.
 - The current map UI still uses local arrival-point data; the simple working database flow intentionally focuses on travel choices.
+- Arrival-point crowd numbers are illustrative local estimates and are not live tracking data.
+- Theme preference is saved only on the device.
+- Payment processing is not connected, and the app does not store card or bank information.
 - Temporary visual state remains in React components.
 
 ## Future development

@@ -5,10 +5,13 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ArrivalMap } from '@/components/ArrivalMap';
+import { TopNotificationBar } from '@/components/TopNotificationBar';
+import { useAppTheme } from '@/context/ThemeContext';
 import { arrivalPoints } from '@/data/mockData';
 import { colors } from '@/utils/theme';
 
 export default function EcoMapScreen() {
+  const { colors } = useAppTheme();
   const [selectedId, setSelectedId] = useState('main');
   const selected = useMemo(
     () => arrivalPoints.find((point) => point.id === selectedId) ?? arrivalPoints[2],
@@ -16,8 +19,9 @@ export default function EcoMapScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.page}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]} edges={['top']}>
+      <View style={[styles.page, { backgroundColor: colors.surface }]}>
+        <TopNotificationBar message="Arrival-point alerts appear here" />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.content}
@@ -29,28 +33,32 @@ export default function EcoMapScreen() {
             hitSlop={8}
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
           >
-            <Ionicons name="chevron-back" size={17} color={palette.muted} />
-            <Text style={styles.backText}>Back</Text>
+            <Ionicons name="chevron-back" size={17} color={colors.textMuted} />
+            <Text style={[styles.backText, { color: colors.textMuted }]}>Back</Text>
           </Pressable>
 
-          <Text style={styles.title}>Find your arrival point</Text>
-          <Text style={styles.subtitle}>Tap a labelled pin to check the walk to the entrance.</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Find your arrival point</Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>Tap a labelled pin to check its walk time and estimated crowd.</Text>
 
           <View style={styles.mapWrap}>
             <ArrivalMap points={arrivalPoints} selectedId={selectedId} onSelect={(point) => setSelectedId(point.id)} />
           </View>
 
-          <View style={styles.selectedCard}>
-            <Text style={styles.cardLabel}>SELECTED LOCATION</Text>
+          <View style={[styles.selectedCard, { borderLeftColor: colors.primary, backgroundColor: colors.surfaceMuted }]}>
+            <Text style={[styles.cardLabel, { color: colors.textMuted }]}>SELECTED LOCATION</Text>
             <View style={styles.selectedRow}>
-              <View style={styles.iconTile}>
-                <Ionicons name={selected.icon} size={19} color={palette.green} />
+              <View style={[styles.iconTile, { backgroundColor: colors.surface }]}>
+                <Ionicons name={selected.icon} size={19} color={colors.primary} />
               </View>
               <View style={styles.selectedCopy}>
-                <Text style={styles.selectedName}>{selected.name}</Text>
-                <Text style={styles.selectedMeta}>
+                <Text style={[styles.selectedName, { color: colors.text }]}>{selected.name}</Text>
+                <Text style={[styles.selectedMeta, { color: colors.textMuted }]}>
                   Walking time: {selected.walkMinutes} minute{selected.walkMinutes === 1 ? '' : 's'} to the main arena
                 </Text>
+                <View style={styles.crowdRow}>
+                  <Ionicons name="people-outline" size={14} color={colors.primary} />
+                  <Text style={[styles.crowdText, { color: colors.primary }]}>Estimated crowd: {selected.peopleCount} people</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -92,5 +100,7 @@ const styles = StyleSheet.create({
   selectedCopy: { flex: 1 },
   selectedName: { color: palette.ink, fontSize: 13, fontWeight: '700' },
   selectedMeta: { marginTop: 4, color: palette.muted, fontSize: 10.5, lineHeight: 15 },
+  crowdRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 5 },
+  crowdText: { fontSize: 10.5, fontWeight: '700' },
   pressed: { opacity: 0.65 },
 });

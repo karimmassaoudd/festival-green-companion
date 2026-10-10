@@ -5,12 +5,15 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { TopNotificationBar } from '@/components/TopNotificationBar';
 import { useAuth } from '@/context/AuthContext';
+import { useAppTheme } from '@/context/ThemeContext';
 import { useTrip } from '@/context/TripContext';
 import { createTravelBooking } from '@/services/bookingService';
 import { colors } from '@/utils/theme';
 
 export default function BookingReviewScreen() {
+  const { colors } = useAppTheme();
   const { user } = useAuth();
   const {
     travelOptions,
@@ -52,8 +55,9 @@ export default function BookingReviewScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.page}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]} edges={['top', 'bottom']}>
+      <View style={[styles.page, { backgroundColor: colors.surface }]}>
+        <TopNotificationBar message="Review your journey before confirming" />
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Pressable
             accessibilityRole="button"
@@ -62,63 +66,63 @@ export default function BookingReviewScreen() {
             hitSlop={8}
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
           >
-            <Ionicons name="chevron-back" size={17} color={palette.muted} />
-            <Text style={styles.backText}>Back</Text>
+            <Ionicons name="chevron-back" size={17} color={colors.textMuted} />
+            <Text style={[styles.backText, { color: colors.textMuted }]}>Back</Text>
           </Pressable>
 
-          <Text style={styles.eyebrow}>TRAIN BOOKING</Text>
-          <Text style={styles.title}>Review your booking</Text>
-          <Text style={styles.subtitle}>Check the details before confirming your festival journey.</Text>
+          <Text style={[styles.eyebrow, { color: colors.primary }]}>TRAIN BOOKING</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Review your booking</Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>Check the details before confirming your festival journey.</Text>
 
           {isLoading || !train ? (
-            <View style={styles.loadingCard}>
-              <ActivityIndicator color={palette.green} />
-              <Text style={styles.mutedText}>Loading booking details...</Text>
+            <View style={[styles.loadingCard, { backgroundColor: colors.surfaceMuted }]}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={[styles.mutedText, { color: colors.textMuted }]}>Loading booking details...</Text>
             </View>
           ) : (
             <>
-              <View style={styles.journeyCard}>
+              <View style={[styles.journeyCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
                 <View style={styles.trainHeader}>
-                  <View style={styles.iconTile}>
-                    <Ionicons name="train-outline" size={24} color={palette.green} />
+                  <View style={[styles.iconTile, { backgroundColor: colors.primarySoft }]}>
+                    <Ionicons name="train-outline" size={24} color={colors.primary} />
                   </View>
                   <View style={styles.flex}>
-                    <Text style={styles.optionName}>Train to Greenfield Festival</Text>
-                    <Text style={styles.optionDetail}>{train.detail}</Text>
+                    <Text style={[styles.optionName, { color: colors.text }]}>Train to Greenfield Festival</Text>
+                    <Text style={[styles.optionDetail, { color: colors.textMuted }]}>{train.detail}</Text>
                   </View>
-                  <Text style={styles.price}>£{train.price}</Text>
+                  <Text style={[styles.price, { color: colors.text }]}>£{train.price}</Text>
                 </View>
 
-                <View style={styles.routeBlock}>
+                <View style={[styles.routeBlock, { backgroundColor: colors.surfaceMuted }]}>
                   <RouteStop icon="radio-button-on" label="From" value="Manchester" />
-                  <View style={styles.routeLine} />
+                  <View style={[styles.routeLine, { backgroundColor: colors.border }]} />
                   <RouteStop icon="location" label="To" value="Willow Park" />
                 </View>
 
-                <View style={styles.metrics}>
+                <View style={[styles.metrics, { borderTopColor: colors.border }]}>
                   <Metric label="Travel time" value={train.duration} />
                   <Metric label="Convenience" value={train.convenience} />
                   <Metric label="CO₂" value={`${train.co2Kg} kg`} last />
                 </View>
               </View>
 
-              <View style={styles.personCard}>
-                <Text style={styles.sectionLabel}>BOOKED FOR</Text>
-                <Text style={styles.personName}>{fullName}</Text>
-                <Text style={styles.personEmail}>{user?.email}</Text>
+              <View style={[styles.personCard, { borderColor: colors.border, backgroundColor: colors.surfaceMuted }]}>
+                <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>BOOKED FOR</Text>
+                <Text style={[styles.personName, { color: colors.text }]}>{fullName}</Text>
+                <Text style={[styles.personEmail, { color: colors.textMuted }]}>{user?.email}</Text>
               </View>
 
-              <View style={styles.noticeCard}>
-                <Ionicons name="information-circle-outline" size={21} color="#765817" />
-                <Text style={styles.noticeText}>
+              <View style={[styles.noticeCard, { backgroundColor: colors.amberSoft }]}>
+                <Ionicons name="information-circle-outline" size={21} color={colors.amber} />
+                <Text style={[styles.noticeText, { color: colors.text }]}>
                   This creates reservation proof inside the app. It is not a rail-operator ticket and does not include payment.
                 </Text>
               </View>
 
               {error ? (
-                <View style={styles.errorCard}>
-                  <Ionicons name="alert-circle-outline" size={20} color="#9B3A35" />
-                  <Text style={styles.errorText}>{error}</Text>
+                <View style={[styles.errorCard, { backgroundColor: colors.surfaceMuted }]}>
+                  <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
+                  <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text>
                 </View>
               ) : null}
 
@@ -128,6 +132,7 @@ export default function BookingReviewScreen() {
                 onPress={() => void confirmBooking()}
                 style={({ pressed }) => [
                   styles.confirmButton,
+                  { backgroundColor: colors.primary },
                   isConfirming && styles.disabled,
                   pressed && styles.pressed,
                 ]}
@@ -147,22 +152,24 @@ export default function BookingReviewScreen() {
 }
 
 function RouteStop({ icon, label, value }: { icon: 'radio-button-on' | 'location'; label: string; value: string }) {
+  const { colors } = useAppTheme();
   return (
     <View style={styles.routeRow}>
-      <Ionicons name={icon} size={17} color={palette.green} />
+      <Ionicons name={icon} size={17} color={colors.primary} />
       <View>
-        <Text style={styles.routeLabel}>{label}</Text>
-        <Text style={styles.routeValue}>{value}</Text>
+        <Text style={[styles.routeLabel, { color: colors.textMuted }]}>{label}</Text>
+        <Text style={[styles.routeValue, { color: colors.text }]}>{value}</Text>
       </View>
     </View>
   );
 }
 
 function Metric({ label, value, last = false }: { label: string; value: string; last?: boolean }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={[styles.metric, !last && styles.metricBorder]}>
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={styles.metricValue}>{value}</Text>
+    <View style={[styles.metric, !last && styles.metricBorder, !last && { borderRightColor: colors.border }]}>
+      <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{label}</Text>
+      <Text style={[styles.metricValue, { color: colors.text }]}>{value}</Text>
     </View>
   );
 }

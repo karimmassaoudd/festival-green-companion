@@ -38,6 +38,7 @@ export type ArrivalPoint = {
   name: string;
   icon: IconName;
   walkMinutes: number;
+  peopleCount: number;
   x: number;
   y: number;
 };

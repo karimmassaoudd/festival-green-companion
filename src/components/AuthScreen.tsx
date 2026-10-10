@@ -16,7 +16,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { TopNotificationBar } from '@/components/TopNotificationBar';
 import { useAuth } from '@/context/AuthContext';
+import { useAppTheme } from '@/context/ThemeContext';
 import { colors } from '@/utils/theme';
 
 type AuthScreenProps = {
@@ -24,6 +26,7 @@ type AuthScreenProps = {
 };
 
 export function AuthScreen({ mode }: AuthScreenProps) {
+  const { colors } = useAppTheme();
   const isSignUp = mode === 'sign-up';
   const { signIn, signUp, startupError } = useAuth();
   const [fullName, setFullName] = useState('');
@@ -74,7 +77,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.flex}
@@ -83,28 +86,29 @@ export function AuthScreen({ mode }: AuthScreenProps) {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.page}>
+          <View style={[styles.page, { backgroundColor: colors.surface }]}>
+            <TopNotificationBar message="Festival travel updates" />
             <View style={styles.brandRow}>
-              <View style={styles.logoTile}>
-                <Ionicons name="leaf-outline" size={25} color={palette.green} />
+              <View style={[styles.logoTile, { backgroundColor: colors.primarySoft }]}>
+                <Ionicons name="leaf-outline" size={25} color={colors.primary} />
               </View>
               <View>
-                <Text style={styles.brand}>Greenfield Festival</Text>
-                <Text style={styles.brandMeta}>Travel planner</Text>
+                <Text style={[styles.brand, { color: colors.text }]}>Greenfield Festival</Text>
+                <Text style={[styles.brandMeta, { color: colors.textMuted }]}>Travel planner</Text>
               </View>
             </View>
 
             <View style={styles.intro}>
-              <Text style={styles.eyebrow}>{isSignUp ? 'Create your account' : 'Welcome back'}</Text>
-              <Text style={styles.title}>{isSignUp ? 'Sign up' : 'Log in'}</Text>
-              <Text style={styles.subtitle}>
+              <Text style={[styles.eyebrow, { color: colors.primary }]}>{isSignUp ? 'Create your account' : 'Welcome back'}</Text>
+              <Text style={[styles.title, { color: colors.text }]}>{isSignUp ? 'Sign up' : 'Log in'}</Text>
+              <Text style={[styles.subtitle, { color: colors.textMuted }]}>
                 {isSignUp
                   ? 'Save your festival travel choice securely to your account.'
                   : 'Log in to load your saved festival travel choice.'}
               </Text>
             </View>
 
-            <View style={styles.formCard}>
+            <View style={[styles.formCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
               {isSignUp ? (
                 <AuthInput
                   label="Name"
@@ -152,9 +156,9 @@ export function AuthScreen({ mode }: AuthScreenProps) {
               ) : null}
 
               {error ? (
-                <View style={styles.errorCard}>
-                  <Ionicons name="alert-circle-outline" size={19} color={palette.danger} />
-                  <Text style={styles.errorText}>{error}</Text>
+                <View style={[styles.errorCard, { backgroundColor: colors.surfaceMuted }]}>
+                  <Ionicons name="alert-circle-outline" size={19} color={colors.danger} />
+                  <Text style={[styles.errorText, { color: colors.danger }]}>{error}</Text>
                 </View>
               ) : null}
 
@@ -164,6 +168,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                 onPress={() => void submit()}
                 style={({ pressed }) => [
                   styles.primaryButton,
+                  { backgroundColor: colors.primary },
                   isSubmitting && styles.buttonDisabled,
                   pressed && styles.pressed,
                 ]}
@@ -177,7 +182,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
             </View>
 
             <View style={styles.switchRow}>
-              <Text style={styles.switchCopy}>
+              <Text style={[styles.switchCopy, { color: colors.textMuted }]}>
                 {isSignUp ? 'Already have an account?' : 'New to Greenfield Festival?'}
               </Text>
               <Pressable
@@ -186,9 +191,17 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                 hitSlop={8}
                 style={({ pressed }) => pressed && styles.pressed}
               >
-                <Text style={styles.switchLink}>{isSignUp ? 'Log in' : 'Sign up'}</Text>
+                <Text style={[styles.switchLink, { color: colors.primary }]}>{isSignUp ? 'Log in' : 'Sign up'}</Text>
               </Pressable>
             </View>
+            <Pressable
+              accessibilityRole="link"
+              onPress={() => router.push('/privacy' as Href)}
+              style={({ pressed }) => [styles.privacyLink, pressed && styles.pressed]}
+            >
+              <Ionicons name="shield-checkmark-outline" size={15} color={colors.primary} />
+              <Text style={[styles.privacyText, { color: colors.primary }]}>Privacy policy</Text>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -201,14 +214,15 @@ type AuthInputProps = React.ComponentProps<typeof TextInput> & {
 };
 
 function AuthInput({ label, ...props }: AuthInputProps) {
+  const { colors } = useAppTheme();
   return (
     <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
       <TextInput
         {...props}
         accessibilityLabel={label}
-        placeholderTextColor="#929CAC"
-        style={styles.input}
+        placeholderTextColor={colors.textMuted}
+        style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.surfaceMuted }]}
       />
     </View>
   );
@@ -294,5 +308,7 @@ const styles = StyleSheet.create({
   switchRow: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 24 },
   switchCopy: { color: palette.muted, fontSize: 13 },
   switchLink: { color: palette.green, fontSize: 13, fontWeight: '700' },
+  privacyLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 18 },
+  privacyText: { fontSize: 12, fontWeight: '700' },
   pressed: { opacity: 0.7 },
 });

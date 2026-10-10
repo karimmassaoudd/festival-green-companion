@@ -47,7 +47,12 @@ export function TripProvider({ children }: PropsWithChildren) {
 
     try {
       const data = await loadFestivalTravelData(user.id);
-      const bookings = await loadUserTravelBookings(user.id, data.festivalId);
+      let bookings: Record<string, string> = {};
+      try {
+        bookings = await loadUserTravelBookings(user.id, data.festivalId);
+      } catch (bookingLoadError) {
+        setError(getErrorMessage(bookingLoadError));
+      }
       const savedOption = data.travelOptions.find(
         (option) => option.id === data.savedTravelOptionId,
       );

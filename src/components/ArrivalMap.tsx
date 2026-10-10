@@ -31,7 +31,7 @@ export function ArrivalMap({ points, selectedId, onSelect }: ArrivalMapProps) {
           <Pressable
             key={point.id}
             accessibilityRole="button"
-            accessibilityLabel={`${point.name}, ${point.walkMinutes} minute walk`}
+            accessibilityLabel={`${point.name}, ${point.walkMinutes} minute walk, estimated ${point.peopleCount} people`}
             accessibilityState={{ selected }}
             onPress={() => onSelect(point)}
             style={({ pressed }) => [
@@ -42,6 +42,10 @@ export function ArrivalMap({ points, selectedId, onSelect }: ArrivalMapProps) {
           >
             <View style={[styles.marker, selected && styles.markerSelected]}>
               <Ionicons name={point.icon} size={selected ? 18 : 16} color={selected ? '#FFFFFF' : '#314159'} />
+            </View>
+            <View style={[styles.peopleBadge, selected && styles.peopleBadgeSelected]}>
+              <Ionicons name="people" size={10} color={selected ? '#FFFFFF' : '#34815F'} />
+              <Text style={[styles.peopleText, selected && styles.peopleTextSelected]}>{point.peopleCount}</Text>
             </View>
             <View style={styles.label}>
               <Text style={styles.labelText}>{point.name}</Text>
@@ -80,6 +84,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   markerSelected: { borderColor: '#34815F', backgroundColor: '#34815F' },
+  peopleBadge: {
+    position: 'absolute',
+    top: -4,
+    right: 14,
+    minWidth: 34,
+    height: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+    paddingHorizontal: 4,
+    borderWidth: 1,
+    borderColor: '#B9D9CA',
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+  },
+  peopleBadgeSelected: { borderColor: '#2B6E51', backgroundColor: '#2B6E51' },
+  peopleText: { color: '#34815F', fontSize: 9, fontWeight: '800' },
+  peopleTextSelected: { color: '#FFFFFF' },
   label: {
     maxWidth: 108,
     marginTop: 5,

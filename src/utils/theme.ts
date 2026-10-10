@@ -1,6 +1,6 @@
 import { Platform, ViewStyle } from 'react-native';
 
-export const colors = {
+export const lightColors = {
   background: '#F7F6F1',
   surface: '#FFFFFF',
   surfaceMuted: '#EFF3EE',
@@ -22,6 +22,34 @@ export const colors = {
   danger: '#CA4E45',
   map: '#D7EBDD',
 } as const;
+
+export type AppColors = { [Key in keyof typeof lightColors]: string };
+
+export const darkColors: AppColors = {
+  background: '#101713',
+  surface: '#151D19',
+  surfaceMuted: '#202A24',
+  primary: '#65C693',
+  primaryDark: '#D7F5E4',
+  primarySoft: '#223A2D',
+  mint: '#3F6A50',
+  eco: '#65C693',
+  ecoSoft: '#1D3427',
+  coral: '#FF836E',
+  teal: '#69B9C2',
+  tealSoft: '#1D3639',
+  text: '#F2F6F3',
+  textMuted: '#A6B3AA',
+  border: '#334239',
+  lavender: '#252A3B',
+  amber: '#F4BE55',
+  amberSoft: '#3E321D',
+  danger: '#F47B72',
+  map: '#203629',
+};
+
+// Kept as the light palette for older decorative components.
+export const colors = lightColors;
 
 export const spacing = {
   xs: 4,
