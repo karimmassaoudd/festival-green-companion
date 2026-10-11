@@ -125,7 +125,7 @@ grant select on table public.festivals to anon, authenticated;
 grant select on table public.travel_options to anon, authenticated;
 grant select on table public.arrival_points to anon, authenticated;
 grant select, insert, update on table public.user_travel_choices to authenticated;
-grant select, insert on table public.travel_bookings to authenticated;
+grant select, insert, delete on table public.travel_bookings to authenticated;
 
 drop policy if exists "Festival catalog is readable" on public.festivals;
 create policy "Festival catalog is readable"
@@ -175,6 +175,12 @@ create policy "Users can create their own travel bookings"
 on public.travel_bookings for insert
 to authenticated
 with check ((select auth.uid()) is not null and (select auth.uid()) = user_id);
+
+drop policy if exists "Users can delete their own travel bookings" on public.travel_bookings;
+create policy "Users can delete their own travel bookings"
+on public.travel_bookings for delete
+to authenticated
+using ((select auth.uid()) is not null and (select auth.uid()) = user_id);
 
 -- Seed the festival shown by the current design.
 insert into public.festivals (

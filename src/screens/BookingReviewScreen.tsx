@@ -26,6 +26,7 @@ export default function BookingReviewScreen() {
     isLoading,
     selectTravel,
     rememberBooking,
+    showNotice,
   } = useTrip();
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +52,7 @@ export default function BookingReviewScreen() {
         travelOption,
       });
       rememberBooking(travelOption.id, booking.id);
+      showNotice(`${travelOption.name} booking saved in your basket`);
       await selectTravel(travelOption.id);
       router.replace(`/booking/${booking.id}` as Href);
     } catch (bookingError) {

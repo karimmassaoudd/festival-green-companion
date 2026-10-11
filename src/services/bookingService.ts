@@ -147,6 +147,28 @@ export async function loadBookingProof(
   };
 }
 
+export async function deleteTravelBooking(bookingId: string, userId: string) {
+  const client = getSupabaseClient();
+  const { error } = await client
+    .from('travel_bookings')
+    .delete()
+    .eq('id', bookingId)
+    .eq('user_id', userId);
+
+  if (error) throw new Error(`Could not delete the booking: ${error.message}`);
+}
+
+export async function deleteAllTravelBookings(userId: string, festivalId: string) {
+  const client = getSupabaseClient();
+  const { error } = await client
+    .from('travel_bookings')
+    .delete()
+    .eq('user_id', userId)
+    .eq('festival_id', festivalId);
+
+  if (error) throw new Error(`Could not reset your bookings: ${error.message}`);
+}
+
 function mapBooking(row: BookingRow): TravelBooking {
   return {
     id: row.id,

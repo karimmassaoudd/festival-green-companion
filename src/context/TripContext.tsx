@@ -1,7 +1,11 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useAuth } from '@/context/AuthContext';
-import { loadUserTravelBookings } from '@/services/bookingService';
+import {
+  deleteAllTravelBookings,
+  deleteTravelBooking,
+  loadUserTravelBookings,
+} from '@/services/bookingService';
 import { loadFestivalTravelData, saveTravelChoice } from '@/services/travelService';
 import { TravelOption } from '@/types/models';
 
@@ -10,11 +14,15 @@ type TripContextValue = {
   selectedTravel: TravelOption | null;
   festivalId: string | null;
   bookingByTravelOptionId: Record<string, string>;
+  noticeMessage: string | null;
   isLoading: boolean;
   isSaving: boolean;
   error: string | null;
   selectTravel: (id: string) => Promise<boolean>;
   rememberBooking: (travelOptionId: string, bookingId: string) => void;
+  deleteBooking: (travelOptionId: string, bookingId: string) => Promise<boolean>;
+  resetBookings: () => Promise<boolean>;
+  showNotice: (message: string | null) => void;
   retry: () => Promise<void>;
 };
 
@@ -26,6 +34,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   const [selectedTravel, setSelectedTravel] = useState<TravelOption | null>(null);
   const [festivalId, setFestivalId] = useState<string | null>(null);
   const [bookingByTravelOptionId, setBookingByTravelOptionId] = useState<Record<string, string>>({});
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -114,27 +123,79 @@ export function TripProvider({ children }: PropsWithChildren) {
     setBookingByTravelOptionId((current) => ({ ...current, [travelOptionId]: bookingId }));
   }, []);
 
+  const deleteBooking = useCallback(async (travelOptionId: string, bookingId: string) => {
+    if (!userId || isSaving) return false;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      await deleteTravelBooking(bookingId, userId);
+      setBookingByTravelOptionId((current) => {
+        const next = { ...current };
+        delete next[travelOptionId];
+        return next;
+      });
+      const optionName = travelOptions.find((option) => option.id === travelOptionId)?.name ?? 'Travel';
+      setNoticeMessage(`${optionName} booking deleted`);
+      return true;
+    } catch (deleteError) {
+      setError(getErrorMessage(deleteError));
+      setNoticeMessage('Could not delete the booking. Check the Supabase DELETE policy.');
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  }, [isSaving, travelOptions, userId]);
+
+  const resetBookings = useCallback(async () => {
+    if (!userId || !festivalId || isSaving) return false;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      await deleteAllTravelBookings(userId, festivalId);
+      setBookingByTravelOptionId({});
+      setNoticeMessage('Bookings cleared — you can book the same journey again');
+      return true;
+    } catch (resetError) {
+      setError(getErrorMessage(resetError));
+      setNoticeMessage('Could not clear bookings. Check the Supabase DELETE policy.');
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  }, [festivalId, isSaving, userId]);
+
   const value = useMemo(
     () => ({
       travelOptions,
       selectedTravel,
       festivalId,
       bookingByTravelOptionId,
+      noticeMessage,
       isLoading,
       isSaving,
       error,
       selectTravel,
       rememberBooking,
+      deleteBooking,
+      resetBookings,
+      showNotice: setNoticeMessage,
       retry: loadData,
     }),
     [
       bookingByTravelOptionId,
+      deleteBooking,
       error,
       festivalId,
       isLoading,
       isSaving,
       loadData,
+      noticeMessage,
       rememberBooking,
+      resetBookings,
       selectTravel,
       selectedTravel,
       travelOptions,

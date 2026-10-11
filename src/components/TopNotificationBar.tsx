@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAuth } from '@/context/AuthContext';
 import { useAppTheme } from '@/context/ThemeContext';
@@ -16,7 +16,7 @@ export function TopNotificationBar({
 }: TopNotificationBarProps) {
   const { colors, isDark, toggleTheme } = useAppTheme();
   const { refreshSession, user } = useAuth();
-  const { bookingByTravelOptionId, retry } = useTrip();
+  const { bookingByTravelOptionId, noticeMessage, resetBookings } = useTrip();
   const bookingCount = Object.keys(bookingByTravelOptionId).length;
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
@@ -34,10 +34,34 @@ export function TopNotificationBar({
       return;
     }
 
-    await retry();
-    setRefreshMessage('Ready to choose another journey');
+    const wasReset = await resetBookings();
+    if (!wasReset) {
+      setRefreshMessage('Could not reset bookings. Open the basket for details.');
+      setIsRefreshing(false);
+      return;
+    }
+
+    setRefreshMessage(null);
     setIsRefreshing(false);
-    if (user) router.replace('/travel');
+    if (user) router.replace('/');
+  }
+
+  function confirmRefresh() {
+    if (isRefreshing) return;
+
+    if (bookingCount === 0) {
+      void refreshApp();
+      return;
+    }
+
+    Alert.alert(
+      'Restart booking process?',
+      'This deletes all saved booking proofs from Supabase so you can book the same journeys again.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete and restart', style: 'destructive', onPress: () => void refreshApp() },
+      ],
+    );
   }
 
   return (
@@ -50,7 +74,7 @@ export function TopNotificationBar({
         <View style={[styles.dot, { backgroundColor: colors.coral, borderColor: colors.surface }]} />
       </View>
       <Text numberOfLines={1} style={[styles.message, { color: colors.text }]}>
-        {refreshMessage ?? (bookingCount > 0
+        {refreshMessage ?? noticeMessage ?? (bookingCount > 0
           ? `${bookingCount} booking${bookingCount === 1 ? '' : 's'} saved`
           : message)}
       </Text>
@@ -58,7 +82,7 @@ export function TopNotificationBar({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${bookingCount} saved bookings. Open travel bookings`}
-          onPress={() => router.navigate('/travel')}
+          onPress={() => router.push('/bookings')}
           hitSlop={8}
           style={({ pressed }) => [
             styles.actionButton,
@@ -76,10 +100,10 @@ export function TopNotificationBar({
       ) : null}
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Refresh all app data"
+        accessibilityLabel="Delete saved bookings and restart"
         accessibilityState={{ busy: isRefreshing, disabled: isRefreshing }}
         disabled={isRefreshing}
-        onPress={() => void refreshApp()}
+        onPress={confirmRefresh}
         hitSlop={8}
         style={({ pressed }) => [
           styles.actionButton,

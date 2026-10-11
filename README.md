@@ -54,7 +54,7 @@ The project aims to make festival travel clearer and more sustainable by allowin
 - Provides Supabase email/password sign-up and login screens.
 - Restores the signed-in session when the app starts.
 - Includes a top notification bar on the main screens.
-- Provides a global refresh button that rechecks the session and reloads Supabase travel, choice, and booking data.
+- Provides a global reset button that deletes the signed-in user's saved booking proofs after confirmation, then restarts the journey from Home so the same option can be booked again.
 - Supports persistent light and dark modes.
 - Includes a plain-language privacy policy that explains current data storage.
 
@@ -76,7 +76,7 @@ Supabase stores festivals, travel options, arrival points, registered accounts, 
 
 Supabase Auth stores account email addresses, securely hashed passwords, account IDs, and the name supplied during sign-up. Row Level Security ensures users can only access their own travel choice and booking records. The application uses a public publishable key and never contains a secret or service-role key.
 
-The Train option demonstrates the complete booking flow: review the journey, confirm it, save a `travel_bookings` record, and reload that record as booking proof. The proof is an in-app reservation for this portfolio project; it is not a rail-operator ticket and does not process payment.
+Every travel option demonstrates the complete booking flow: review the journey, confirm it, save a `travel_bookings` record, and reload that record as booking proof. The top notification bar shows how many bookings are saved, and its basket button opens a dedicated list where each booking can be viewed or deleted. The proof is an in-app reservation for this portfolio project; it is not an operator ticket and does not process payment.
 
 See [supabase/README.md](./supabase/README.md) for setup instructions and [supabase/schema.sql](./supabase/schema.sql) for the complete schema, seed data, relationships, permissions, and RLS policies.
 
@@ -220,9 +220,10 @@ npm run typecheck
 - Users create an account or log in with email and password through Supabase Auth.
 - The selected travel method is saved in `user_travel_choices` with the logged-in account ID.
 - The saved choice is loaded after the user's session is restored.
-- Confirming Train creates one `travel_bookings` record for that user, festival, and travel option.
+- Confirming Train, Bus, Car, or Bike creates one `travel_bookings` record for that user, festival, and travel option.
 - The proof screen reloads the booking reference, status, price, and booking time from Supabase.
-- Returning to the Train option shows **View booking proof** when a confirmed booking already exists.
+- Returning to a booked option shows **View booking proof** when a confirmed booking already exists.
+- The basket can delete one booking, while the top reset button can delete all of the user's festival bookings so the same options can be booked again.
 - The Supabase login session persists locally through Expo SQLite storage.
 - Festival and arrival-point tables are created and seeded by the SQL schema.
 - The current map UI still uses local arrival-point data; the simple working database flow intentionally focuses on travel choices.
