@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import type { Href } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -35,6 +35,10 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(startupError);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
 
   async function submit() {
     setError(null);
@@ -79,10 +83,12 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
       >
         <ScrollView
+          ref={scrollRef}
+          keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.scrollContent}
         >
@@ -117,11 +123,15 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                   placeholder="Your name"
                   autoComplete="name"
                   textContentType="name"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => emailRef.current?.focus()}
                 />
               ) : null}
 
               <AuthInput
                 label="Email"
+                inputRef={emailRef}
                 value={email}
                 onChangeText={setEmail}
                 placeholder="name@example.com"
@@ -129,10 +139,14 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                 autoCapitalize="none"
                 autoComplete="email"
                 textContentType="emailAddress"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => passwordRef.current?.focus()}
               />
 
               <AuthInput
                 label="Password"
+                inputRef={passwordRef}
                 value={password}
                 onChangeText={setPassword}
                 placeholder="At least 6 characters"
@@ -140,11 +154,22 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                 autoCapitalize="none"
                 autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 textContentType={isSignUp ? 'newPassword' : 'password'}
+                returnKeyType={isSignUp ? 'next' : 'done'}
+                blurOnSubmit={!isSignUp}
+                onFocus={() => scrollRef.current?.scrollToEnd({ animated: true })}
+                onSubmitEditing={() => {
+                  if (isSignUp) {
+                    confirmPasswordRef.current?.focus();
+                  } else {
+                    void submit();
+                  }
+                }}
               />
 
               {isSignUp ? (
                 <AuthInput
                   label="Confirm password"
+                  inputRef={confirmPasswordRef}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   placeholder="Type your password again"
@@ -152,6 +177,9 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                   autoCapitalize="none"
                   autoComplete="new-password"
                   textContentType="newPassword"
+                  returnKeyType="done"
+                  onFocus={() => scrollRef.current?.scrollToEnd({ animated: true })}
+                  onSubmitEditing={() => void submit()}
                 />
               ) : null}
 
@@ -211,14 +239,16 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
 type AuthInputProps = React.ComponentProps<typeof TextInput> & {
   label: string;
+  inputRef?: React.RefObject<TextInput | null>;
 };
 
-function AuthInput({ label, ...props }: AuthInputProps) {
+function AuthInput({ label, inputRef, ...props }: AuthInputProps) {
   const { colors } = useAppTheme();
   return (
     <View style={styles.field}>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
       <TextInput
+        ref={inputRef}
         {...props}
         accessibilityLabel={label}
         placeholderTextColor={colors.textMuted}

@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import type { Href } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -14,9 +14,14 @@ import { colors } from '@/utils/theme';
 
 export default function BookingReviewScreen() {
   const { colors } = useAppTheme();
+  const params = useLocalSearchParams<{ travelOptionId?: string | string[] }>();
+  const travelOptionId = Array.isArray(params.travelOptionId)
+    ? params.travelOptionId[0]
+    : params.travelOptionId;
   const { user } = useAuth();
   const {
     travelOptions,
+    selectedTravel,
     festivalId,
     isLoading,
     selectTravel,
@@ -24,9 +29,9 @@ export default function BookingReviewScreen() {
   } = useTrip();
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const train = useMemo(
-    () => travelOptions.find((option) => option.name === 'Train'),
-    [travelOptions],
+  const travelOption = useMemo(
+    () => travelOptions.find((option) => option.id === travelOptionId) ?? selectedTravel,
+    [selectedTravel, travelOptionId, travelOptions],
   );
   const fullName =
     typeof user?.user_metadata.full_name === 'string'
@@ -34,7 +39,7 @@ export default function BookingReviewScreen() {
       : 'Festival traveller';
 
   async function confirmBooking() {
-    if (!user || !festivalId || !train || isConfirming) return;
+    if (!user || !festivalId || !travelOption || isConfirming) return;
 
     setIsConfirming(true);
     setError(null);
@@ -43,10 +48,10 @@ export default function BookingReviewScreen() {
       const booking = await createTravelBooking({
         userId: user.id,
         festivalId,
-        travelOption: train,
+        travelOption,
       });
-      rememberBooking(train.id, booking.id);
-      await selectTravel(train.id);
+      rememberBooking(travelOption.id, booking.id);
+      await selectTravel(travelOption.id);
       router.replace(`/booking/${booking.id}` as Href);
     } catch (bookingError) {
       setError(getErrorMessage(bookingError));
@@ -70,11 +75,13 @@ export default function BookingReviewScreen() {
             <Text style={[styles.backText, { color: colors.textMuted }]}>Back</Text>
           </Pressable>
 
-          <Text style={[styles.eyebrow, { color: colors.primary }]}>TRAIN BOOKING</Text>
+          <Text style={[styles.eyebrow, { color: colors.primary }]}>
+            {travelOption ? `${travelOption.name.toUpperCase()} BOOKING` : 'TRAVEL BOOKING'}
+          </Text>
           <Text style={[styles.title, { color: colors.text }]}>Review your booking</Text>
           <Text style={[styles.subtitle, { color: colors.textMuted }]}>Check the details before confirming your festival journey.</Text>
 
-          {isLoading || !train ? (
+          {isLoading || !travelOption ? (
             <View style={[styles.loadingCard, { backgroundColor: colors.surfaceMuted }]}>
               <ActivityIndicator color={colors.primary} />
               <Text style={[styles.mutedText, { color: colors.textMuted }]}>Loading booking details...</Text>
@@ -82,15 +89,19 @@ export default function BookingReviewScreen() {
           ) : (
             <>
               <View style={[styles.journeyCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
-                <View style={styles.trainHeader}>
+                <View style={styles.optionHeader}>
                   <View style={[styles.iconTile, { backgroundColor: colors.primarySoft }]}>
-                    <Ionicons name="train-outline" size={24} color={colors.primary} />
+                    <Ionicons name={travelOption.icon} size={24} color={colors.primary} />
                   </View>
                   <View style={styles.flex}>
-                    <Text style={[styles.optionName, { color: colors.text }]}>Train to Greenfield Festival</Text>
-                    <Text style={[styles.optionDetail, { color: colors.textMuted }]}>{train.detail}</Text>
+                    <Text style={[styles.optionName, { color: colors.text }]}>
+                      {travelOption.name} to Greenfield Festival
+                    </Text>
+                    <Text style={[styles.optionDetail, { color: colors.textMuted }]}>{travelOption.detail}</Text>
                   </View>
-                  <Text style={[styles.price, { color: colors.text }]}>£{train.price}</Text>
+                  <Text style={[styles.price, { color: colors.text }]}>
+                    {travelOption.price === 0 ? 'Free' : `£${travelOption.price}`}
+                  </Text>
                 </View>
 
                 <View style={[styles.routeBlock, { backgroundColor: colors.surfaceMuted }]}>
@@ -100,9 +111,9 @@ export default function BookingReviewScreen() {
                 </View>
 
                 <View style={[styles.metrics, { borderTopColor: colors.border }]}>
-                  <Metric label="Travel time" value={train.duration} />
-                  <Metric label="Convenience" value={train.convenience} />
-                  <Metric label="CO₂" value={`${train.co2Kg} kg`} last />
+                  <Metric label="Travel time" value={travelOption.duration} />
+                  <Metric label="Convenience" value={travelOption.convenience} />
+                  <Metric label="CO₂" value={`${travelOption.co2Kg} kg`} last />
                 </View>
               </View>
 
@@ -115,7 +126,7 @@ export default function BookingReviewScreen() {
               <View style={[styles.noticeCard, { backgroundColor: colors.amberSoft }]}>
                 <Ionicons name="information-circle-outline" size={21} color={colors.amber} />
                 <Text style={[styles.noticeText, { color: colors.text }]}>
-                  This creates reservation proof inside the app. It is not a rail-operator ticket and does not include payment.
+                  This creates reservation proof inside the app. It is not an operator ticket and does not include payment.
                 </Text>
               </View>
 
@@ -199,7 +210,7 @@ const styles = StyleSheet.create({
   loadingCard: { minHeight: 150, marginTop: 22, alignItems: 'center', justifyContent: 'center', gap: 10, borderRadius: 10, backgroundColor: palette.soft },
   mutedText: { color: palette.muted, fontSize: 12 },
   journeyCard: { marginTop: 22, padding: 18, borderWidth: 1, borderColor: palette.line, borderRadius: 12, backgroundColor: '#FFFFFF' },
-  trainHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  optionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconTile: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', borderRadius: 9, backgroundColor: '#EAF4EE' },
   optionName: { color: palette.ink, fontSize: 15, fontWeight: '800' },
   optionDetail: { marginTop: 4, color: palette.muted, fontSize: 11, lineHeight: 15 },

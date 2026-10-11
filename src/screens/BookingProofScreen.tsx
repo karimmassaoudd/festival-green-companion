@@ -83,7 +83,7 @@ export default function BookingProofScreen() {
                 <Ionicons name="checkmark" size={33} color="#FFFFFF" />
               </View>
               <Text style={[styles.eyebrow, { color: colors.primary }]}>BOOKING CONFIRMED</Text>
-              <Text style={[styles.title, { color: colors.text }]}>Your Train is booked</Text>
+              <Text style={[styles.title, { color: colors.text }]}>Your {proof.travelOptionName} is booked</Text>
               <Text style={[styles.subtitle, { color: colors.textMuted }]}>This proof was loaded from your Supabase booking record.</Text>
 
               <View style={[styles.proofCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
@@ -101,14 +101,14 @@ export default function BookingProofScreen() {
                 <View style={[styles.dashedLine, { borderColor: colors.border }]} />
 
                 <View style={styles.festivalRow}>
-                  <View style={[styles.trainIcon, { backgroundColor: colors.primarySoft }]}>
-                    <Ionicons name="train-outline" size={24} color={colors.primary} />
+                  <View style={[styles.travelIcon, { backgroundColor: colors.primarySoft }]}>
+                    <Ionicons name={getTravelIcon(proof.travelOptionName)} size={24} color={colors.primary} />
                   </View>
                   <View style={styles.flex}>
                     <Text style={[styles.travelName, { color: colors.text }]}>{proof.travelOptionName}</Text>
                     <Text style={[styles.festivalName, { color: colors.textMuted }]}>{proof.festivalName}</Text>
                   </View>
-                  <Text style={[styles.price, { color: colors.text }]}>£{proof.price}</Text>
+                  <Text style={[styles.price, { color: colors.text }]}>{proof.price === 0 ? 'Free' : `£${proof.price}`}</Text>
                 </View>
 
                 <View style={[styles.routeBox, { backgroundColor: colors.surfaceMuted }]}>
@@ -134,7 +134,7 @@ export default function BookingProofScreen() {
               <View style={[styles.noticeCard, { backgroundColor: colors.primarySoft }]}>
                 <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary} />
                 <Text style={[styles.noticeText, { color: colors.text }]}>
-                  In-app reservation proof only. This is not a rail ticket and cannot be used for train travel.
+                  In-app reservation proof only. This is not an operator ticket and cannot be used for travel.
                 </Text>
               </View>
 
@@ -161,6 +161,17 @@ function ProofRow({ label, value }: { label: string; value: string }) {
       <Text style={[styles.proofValue, { color: colors.text }]}>{value}</Text>
     </View>
   );
+}
+
+function getTravelIcon(name: string): 'train-outline' | 'bus-outline' | 'car-outline' | 'bicycle-outline' {
+  const icons = {
+    Train: 'train-outline',
+    Bus: 'bus-outline',
+    Car: 'car-outline',
+    Bike: 'bicycle-outline',
+  } as const;
+
+  return icons[name as keyof typeof icons] ?? 'train-outline';
 }
 
 function formatDateRange(start: string, end: string) {
@@ -219,7 +230,7 @@ const styles = StyleSheet.create({
   statusText: { color: palette.green, fontSize: 9, fontWeight: '800' },
   dashedLine: { marginVertical: 18, borderTopWidth: 1, borderStyle: 'dashed', borderColor: '#C9D1DA' },
   festivalRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  trainIcon: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', borderRadius: 9, backgroundColor: '#EAF4EE' },
+  travelIcon: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', borderRadius: 9, backgroundColor: '#EAF4EE' },
   travelName: { color: palette.ink, fontSize: 15, fontWeight: '800' },
   festivalName: { marginTop: 3, color: palette.muted, fontSize: 11 },
   price: { color: palette.ink, fontSize: 17, fontWeight: '800' },

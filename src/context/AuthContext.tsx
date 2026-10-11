@@ -17,6 +17,7 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (fullName: string, email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<AuthResult>;
+  refreshSession: () => Promise<AuthResult>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -126,6 +127,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  const refreshSession = useCallback(async (): Promise<AuthResult> => {
+    try {
+      const client = getSupabaseClient();
+      const { data, error } = await client.auth.getSession();
+
+      if (error) return { error: error.message };
+
+      setSession(isRegisteredSession(data.session) ? data.session : null);
+      setStartupError(null);
+      return { error: null };
+    } catch (error) {
+      return { error: getErrorMessage(error) };
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       session,
@@ -135,8 +151,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       signIn,
       signUp,
       signOut,
+      refreshSession,
     }),
-    [isLoading, session, signIn, signOut, signUp, startupError],
+    [isLoading, refreshSession, session, signIn, signOut, signUp, startupError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

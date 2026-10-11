@@ -19,7 +19,6 @@ export default function TravelScreen() {
     isLoading,
     isSaving,
     error,
-    selectTravel,
     retry,
   } = useTrip();
 
@@ -86,13 +85,15 @@ export default function TravelScreen() {
                     bookingId={bookingByTravelOptionId[option.id]}
                     onSelect={() => {
                       const bookingId = bookingByTravelOptionId[option.id];
-                      if (option.name === 'Train') {
-                        router.push(
-                          (bookingId ? `/booking/${bookingId}` : '/booking/review') as Href,
-                        );
+                      if (bookingId) {
+                        router.push(`/booking/${bookingId}` as Href);
                         return;
                       }
-                      void selectTravel(option.id);
+
+                      router.push({
+                        pathname: '/booking/review',
+                        params: { travelOptionId: option.id },
+                      });
                     }}
                   />
                 ))}
@@ -136,9 +137,7 @@ function TravelCard({
     ? 'View booking proof'
     : saving
       ? 'Saving...'
-      : selected
-        ? `${option.name} selected`
-        : `Choose ${option.name.toLowerCase()}`;
+      : `Book ${option.name.toLowerCase()}`;
 
   return (
     <View style={[

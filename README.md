@@ -54,6 +54,7 @@ The project aims to make festival travel clearer and more sustainable by allowin
 - Provides Supabase email/password sign-up and login screens.
 - Restores the signed-in session when the app starts.
 - Includes a top notification bar on the main screens.
+- Provides a global refresh button that rechecks the session and reloads Supabase travel, choice, and booking data.
 - Supports persistent light and dark modes.
 - Includes a plain-language privacy policy that explains current data storage.
 
